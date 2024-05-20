@@ -1,0 +1,156 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`getEnabledFeaturesForEnvironment > should return only enabled features for a given environment 1`] = `[]`;
+
+exports[`getFlatFeatures > should return a flat list of features 1`] = `
+[
+  {
+    "condition": "Condition 1",
+    "conditionEnabled": false,
+    "environment": "Production",
+    "environmentEnabled": false,
+    "feature": "Feature 1",
+    "featureEnabled": false,
+  },
+  {
+    "condition": "Condition 2",
+    "conditionEnabled": false,
+    "environment": "Production",
+    "environmentEnabled": false,
+    "feature": "Feature 1",
+    "featureEnabled": false,
+  },
+  {
+    "environment": "Preview",
+    "environmentEnabled": false,
+    "feature": "Feature 1",
+    "featureEnabled": false,
+  },
+]
+`;
+
+exports[`getFlatFeatures > should return a flat list of features with enabled items 1`] = `
+[
+  {
+    "condition": "Condition 1",
+    "conditionEnabled": true,
+    "environment": "Production",
+    "environmentEnabled": false,
+    "feature": "Feature 1",
+    "featureEnabled": false,
+  },
+  {
+    "condition": "Condition 2",
+    "conditionEnabled": false,
+    "environment": "Production",
+    "environmentEnabled": false,
+    "feature": "Feature 1",
+    "featureEnabled": false,
+  },
+  {
+    "environment": "Development",
+    "environmentEnabled": false,
+    "feature": "Feature 1",
+    "featureEnabled": false,
+  },
+  {
+    "environment": "Preview",
+    "environmentEnabled": false,
+    "feature": "Feature 1",
+    "featureEnabled": false,
+  },
+  {
+    "condition": "Condition 3",
+    "conditionEnabled": true,
+    "environment": "Production",
+    "environmentEnabled": false,
+    "feature": "Feature 2",
+    "featureEnabled": false,
+  },
+]
+`;
+
+exports[`parseMarkdown > should parse markdown with enabled items 1`] = `
+{
+  "features": [
+    {
+      "enabled": false,
+      "environments": [
+        {
+          "conditions": [
+            {
+              "enabled": true,
+              "name": "Condition 1",
+            },
+            {
+              "enabled": false,
+              "name": "Condition 2",
+            },
+          ],
+          "enabled": false,
+          "name": "Production",
+        },
+        {
+          "conditions": [],
+          "enabled": false,
+          "name": "Development",
+        },
+        {
+          "conditions": [],
+          "enabled": false,
+          "name": "Preview",
+        },
+      ],
+      "name": "Feature 1",
+    },
+    {
+      "enabled": false,
+      "environments": [
+        {
+          "conditions": [
+            {
+              "enabled": true,
+              "name": "Condition 3",
+            },
+          ],
+          "enabled": false,
+          "name": "Production",
+        },
+      ],
+      "name": "Feature 2",
+    },
+  ],
+}
+`;
+
+exports[`parseMarkdown > should parse valid markdown correctly 1`] = `
+{
+  "features": [
+    {
+      "enabled": false,
+      "environments": [
+        {
+          "conditions": [
+            {
+              "enabled": false,
+              "name": "Condition 1",
+            },
+            {
+              "enabled": false,
+              "name": "Condition 2",
+            },
+          ],
+          "enabled": false,
+          "name": "Production",
+        },
+        {
+          "conditions": [],
+          "enabled": false,
+          "name": "Preview",
+        },
+      ],
+      "name": "Feature 1",
+    },
+  ],
+}
+`;
