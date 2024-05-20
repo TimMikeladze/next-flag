@@ -1,0 +1,41 @@
+name: Main
+
+on: [push]
+
+jobs:
+  run-ci:
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    name: Run Type Check & Linters
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check types
+        run: pnpm type-check
+
+      - name: Check linting
+        run: pnpm lint
+
+      - name: Run tests
+        run: pnpm test:ci
+
+      - name: Build storybook
+        run: pnpm build-storybook
+
+      - name: Build package
+        run: pnpm build
