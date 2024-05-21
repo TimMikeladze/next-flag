@@ -1,206 +1,86 @@
-export interface Condition {
-  enabled: boolean;
-  name: string;
-}
+import { spaceSlug } from 'space-slug';
+import { Condition, Environment, Feature, Features } from './types';
 
-export interface Environment {
-  conditions: Condition[];
-  enabled: boolean;
-  name: string;
-}
-
-export interface Feature {
-  enabled: boolean;
-  environments: Environment[];
-  name: string;
-}
-
-export interface FlatFeature {
-  condition?: string;
-  conditionEnabled?: boolean;
-  environment?: string;
-
-  environmentEnabled?: boolean;
-
-  feature: string;
-
-  featureEnabled?: boolean;
-}
-
-export interface ParsedData {
-  features: Feature[];
-}
-
-// export const parseMarkdown = (markdown: string): ParsedData => {
-//   const lines = markdown.split('\n').filter((line) => line.trim() !== '');
-//   const parsedData: ParsedData = { features: [] };
-
-//   let currentFeature: Feature | null = null;
-//   let currentEnvironment: Environment | null = null;
-
-//   lines.forEach((line) => {
-//     const trimmedLine = line.trim();
-//     const level = line.search(/\S|$/); // Get indentation level
-
-//     if (level === 0) {
-//       // Top-level: Feature
-//       if (!trimmedLine.startsWith('- [')) {
-//         throw new Error(`Invalid format at top level: ${trimmedLine}`);
-//       }
-//       currentFeature = {
-//         name: trimmedLine.slice(6),
-//         enabled:
-//           trimmedLine.startsWith('- [x]') || trimmedLine.startsWith('- [X]'),
-//         environments: [],
-//       };
-//       parsedData.features.push(currentFeature);
-//       currentEnvironment = null;
-//     } else if (level === 2 && currentFeature) {
-//       // Second-level: Environment
-//       if (!trimmedLine.startsWith('- [')) {
-//         throw new Error(`Invalid format at environment level: ${trimmedLine}`);
-//       }
-//       currentEnvironment = {
-//         name: trimmedLine.slice(6),
-//         enabled:
-//           trimmedLine.startsWith('- [x]') || trimmedLine.startsWith('- [X]'),
-//         conditions: [],
-//       };
-//       currentFeature.environments.push(currentEnvironment);
-//     } else if (level === 4 && currentEnvironment) {
-//       if (trimmedLine.length) {
-//         // Third-level: Condition
-//         if (!trimmedLine.startsWith('- [')) {
-//           throw new Error(`Invalid format at condition level: ${trimmedLine}`);
-//         }
-//         const condition: Condition = {
-//           name: trimmedLine.slice(6),
-//           enabled:
-//             trimmedLine.startsWith('- [x]') || trimmedLine.startsWith('- [X]'),
-//         };
-//         currentEnvironment.conditions.push(condition);
-//       }
-//     } else {
-//       throw new Error(`Unexpected indentation or format: ${trimmedLine}`);
-//     }
-//   });
-
-//   // Validate the parsed data
-//   if (parsedData.features.length === 0) {
-//     throw new Error('No top-level features found.');
-//   }
-
-//   parsedData.features.forEach((feature) => {
-//     if (feature.environments.length === 0) {
-//       throw new Error(`Feature "${feature.name}" has no environments.`);
-//     }
-//   });
-
-//   return parsedData;
-// };
-
-export const parseMarkdown = (markdown: string): ParsedData => {
-  const lines = markdown.split('\n').filter((line) => line.trim() !== '');
-  const parsedData: ParsedData = { features: [] };
-
+export const parseMarkdown = (markdown: string): Features => {
+  const lines = markdown.split('\n');
+  const features: Features = {};
   let currentFeature: Feature | null = null;
   let currentEnvironment: Environment | null = null;
+  let currentConditions: Record<string, Condition> = {};
+  let featureEnabled = false;
+  let environmentEnabled = false;
+  let conditionsEnabled = false;
 
-  lines.forEach((line) => {
-    const trimmedLine = line.trim();
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
 
-    if (trimmedLine.startsWith('## ')) {
-      // Top-level: Feature
-      const featureName = trimmedLine.slice(3).trim();
+    if (line.startsWith('## ')) {
+      // New feature section
+      const featureName = line.substring(3).trim();
+      const slug = spaceSlug([featureName]);
       currentFeature = {
         name: featureName,
-        enabled: false,
-        environments: [],
+        slug,
+        enabled: featureEnabled,
+        environments: {},
       };
-      parsedData.features.push(currentFeature);
+      features[slug] = currentFeature;
+      // Reset environment and conditions for new feature
       currentEnvironment = null;
-    } else if (trimmedLine === '- [ ] Enabled' && currentFeature) {
-      // Feature enabled checkbox
-      currentFeature.enabled = false;
-    } else if (trimmedLine === '- [x] Enabled' && currentFeature) {
-      // Feature enabled checkbox
-      currentFeature.enabled = true;
-    } else if (trimmedLine.startsWith('### ') && currentFeature) {
-      // Second-level: Environment
-      const environmentName = trimmedLine.slice(4).trim();
+      currentConditions = {};
+      featureEnabled = false;
+    } else if (line.startsWith('### ')) {
+      // New environment section within the current feature
+      const environmentName = spaceSlug([line.substring(4).trim()]);
       currentEnvironment = {
         name: environmentName,
-        enabled: false,
-        conditions: [],
+        enabled: environmentEnabled,
+        conditions: {},
       };
-      currentFeature.environments.push(currentEnvironment);
-    } else if (trimmedLine === '- [ ] Enabled' && currentEnvironment) {
-      // Environment enabled checkbox
-      currentEnvironment.enabled = false;
-    } else if (trimmedLine === '- [x] Enabled' && currentEnvironment) {
-      // Environment enabled checkbox
-      currentEnvironment.enabled = true;
-    } else if (trimmedLine === '#### Conditions' && currentEnvironment) {
-      // Conditions heading, do nothing
-    } else if (trimmedLine.startsWith('- [ ]') && currentEnvironment) {
-      // Condition
-      const conditionName = trimmedLine.slice(6).trim();
-      const condition: Condition = {
-        name: conditionName,
-        enabled: false,
-      };
-      currentEnvironment.conditions.push(condition);
-    } else if (trimmedLine.startsWith('- [x]') && currentEnvironment) {
-      // Condition
-      const conditionName = trimmedLine.slice(6).trim();
-      const condition: Condition = {
-        name: conditionName,
-        enabled: true,
-      };
-      currentEnvironment.conditions.push(condition);
-    }
-  });
-
-  return parsedData;
-};
-
-export const getFlatFeatures = (parsedData: ParsedData): FlatFeature[] => {
-  const flatFeatures: FlatFeature[] = [];
-
-  parsedData.features.forEach((feature) => {
-    feature.environments.forEach((environment) => {
-      if (environment.conditions?.length) {
-        environment.conditions.forEach((condition) => {
-          flatFeatures.push({
-            feature: feature.name,
-            featureEnabled: feature.enabled,
-            environment: environment.name,
-            environmentEnabled: environment.enabled,
-            condition: condition.name,
-            conditionEnabled: condition.enabled,
-          });
-        });
-      } else {
-        flatFeatures.push({
-          feature: feature.name,
-          featureEnabled: feature.enabled,
-          environment: environment.name,
-          environmentEnabled: environment.enabled,
-        });
+      if (currentFeature) {
+        currentFeature.environments[environmentName] = currentEnvironment;
       }
-    });
-  });
+      // Reset conditions for new environment
+      currentConditions = {};
+      environmentEnabled = false;
+    } else if (line.startsWith('#### Conditions')) {
+      // Conditions section, no additional processing needed
+      // Reset conditions for new conditions section
+      currentConditions = {};
+      conditionsEnabled = false;
+    } else if (line.startsWith('- [ ]') || line.startsWith('- [x]')) {
+      // Handle checkbox lines
+      const enabled = line.startsWith('- [x]');
+      const item = line.substring(6).trim();
 
-  return flatFeatures;
+      if (currentEnvironment && !item.startsWith('Condition ')) {
+        // Toggle environment enabled state
+        currentEnvironment.enabled = enabled;
+        environmentEnabled = enabled;
+      } else if (currentFeature && !currentEnvironment) {
+        // Toggle feature enabled state
+        currentFeature.enabled = enabled;
+        featureEnabled = enabled;
+      } else if (
+        currentEnvironment &&
+        item.startsWith('Condition ') &&
+        conditionsEnabled
+      ) {
+        // Add condition to the current environment if conditions section is enabled
+        const conditionName = item.substring(11).trim();
+        const conditionSlug = spaceSlug([conditionName]);
+        currentConditions[conditionSlug] = {
+          name: conditionName,
+          enabled,
+        };
+        currentEnvironment.conditions = currentConditions;
+      }
+      // Check if conditions section is enabled
+      if (item === 'Conditions' && (currentEnvironment || currentFeature)) {
+        conditionsEnabled = enabled;
+      }
+    }
+  }
+
+  return features;
 };
-
-export const getEnabledFeaturesForEnvironment = (
-  flatFeatures: FlatFeature[],
-  environment: string
-): FlatFeature[] =>
-  flatFeatures.filter(
-    (feature) =>
-      feature.environment === environment &&
-      feature.environmentEnabled &&
-      (!feature.condition || feature.conditionEnabled)
-  );

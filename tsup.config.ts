@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src/index.ts'],
+  entry: ['src/index.ts', 'src/react'],
   treeshake: true,
   sourcemap: 'inline',
   minify: true,
@@ -9,6 +9,6 @@ export default defineConfig({
   dts: true,
   splitting: false,
   format: ['cjs', 'esm'],
-  external: ['react'],
+  external: ['react', '@opentelemetry/api'],
   injectStyle: false,
 });

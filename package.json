@@ -10,7 +10,7 @@
     "url": ""
   },
   "scripts": {
-    "dev": "concurrently \"pnpm build --watch\" \"pnpm storybook\" \"pnpm test\" ",
+    "dev": "concurrently \"pnpm build --watch\" \"pnpm test\" ",
     "build": "tsup --onSuccess \"pnpm link:self\"",
     "type-check": "tsc",
     "lint": "eslint --ignore-path .gitignore \"{src,tests}/**/*.+(ts|js|tsx|jsx)\"",
@@ -29,6 +29,10 @@
     ".": {
       "require": "./dist/index.js",
       "import": "./dist/index.mjs"
+    },
+    "./react": {
+      "require": "./dist/react/index.js",
+      "import": "./dist/react/index.mjs"
     }
   },
   "files": [
@@ -121,5 +125,9 @@
     "react": ">=17",
     "react-dom": ">=17"
   },
-  "resolutions": {}
+  "resolutions": {},
+  "dependencies": {
+    "@octokit/rest": "^20.1.1",
+    "space-slug": "^2.0.2"
+  }
 }

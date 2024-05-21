@@ -4,13 +4,13 @@
 
 > Notes go here, ignore this.
 
-- [x] Enabled
+- [ ] Enabled
 
 ### Production
 
 > Notes go here, ignore this.
 
-- [ ] Enabled
+- [x] Enabled
 
 #### Conditions
 
@@ -33,7 +33,7 @@
 
 > Notes go here, ignore this.
 
-- [x] Enabled
+- [ ] Enabled
 
 ### Production
 

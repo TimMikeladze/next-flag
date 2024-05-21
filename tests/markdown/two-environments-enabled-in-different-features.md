@@ -4,7 +4,7 @@
 
 > Notes go here, ignore this.
 
-- [x] Enabled
+- [ ] Enabled
 
 ### Production
 
@@ -40,6 +40,16 @@
 > Notes go here, ignore this.
 
 - [ ] Enabled
+
+#### Conditions
+
+- [ ] Condition 3
+
+### Preview
+
+> Notes go here, ignore this.
+
+- [x] Enabled
 
 #### Conditions
 

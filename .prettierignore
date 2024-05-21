@@ -10,3 +10,5 @@ pnpm-lock.yaml
 .gitignore
 .editorconfig
 .env.template
+*.svg
+*.ico

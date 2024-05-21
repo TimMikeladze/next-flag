@@ -7,6 +7,13 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@octokit/rest':
+        specifier: ^20.1.1
+        version: 20.1.1
+      space-slug:
+        specifier: ^2.0.2
+        version: 2.0.2
     devDependencies:
       '@babel/core':
         specifier: 7.24.5
@@ -6004,6 +6011,10 @@ packages:
 
   space-separated-tokens@2.0.2:
     resolution: {integrity: sha512-PEGlAwrG8yXGXRjW32fGbg66JAlOAwbObuqVoJpv/mRgoWDQfgH1wDPvtzWyUSNAXBGSk8h755YDbbcEy3SH2Q==}
+
+  space-slug@2.0.2:
+    resolution: {integrity: sha512-qwr8SOyl62Zpv9fsuh6r371yq7SriL7kUgqLAuWYcbDvw1pIYtD7jgoCEP3PSXfs8CxtHOK9vqmh+4Nln91pOA==}
+    engines: {node: '>=14.0.0'}
 
   spawn-command@0.0.2:
     resolution: {integrity: sha512-zC8zGoGkmc8J9ndvml8Xksr1Amk9qBujgbF0JAIWO7kXr43w0h/0GJNM/Vustixu+YE8N/MTrQ7N31FvHUACxQ==}
@@ -13748,6 +13759,8 @@ snapshots:
       whatwg-url: 7.1.0
 
   space-separated-tokens@2.0.2: {}
+
+  space-slug@2.0.2: {}
 
   spawn-command@0.0.2: {}
 

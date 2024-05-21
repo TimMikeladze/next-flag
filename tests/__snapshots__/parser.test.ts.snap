@@ -1,156 +1,223 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`getEnabledFeaturesForEnvironment > should return only enabled features for a given environment 1`] = `[]`;
-
-exports[`getFlatFeatures > should return a flat list of features 1`] = `
-[
-  {
-    "condition": "Condition 1",
-    "conditionEnabled": false,
-    "environment": "Production",
-    "environmentEnabled": false,
-    "feature": "Feature 1",
-    "featureEnabled": false,
-  },
-  {
-    "condition": "Condition 2",
-    "conditionEnabled": false,
-    "environment": "Production",
-    "environmentEnabled": false,
-    "feature": "Feature 1",
-    "featureEnabled": false,
-  },
-  {
-    "environment": "Preview",
-    "environmentEnabled": false,
-    "feature": "Feature 1",
-    "featureEnabled": false,
-  },
-]
-`;
-
-exports[`getFlatFeatures > should return a flat list of features with enabled items 1`] = `
-[
-  {
-    "condition": "Condition 1",
-    "conditionEnabled": true,
-    "environment": "Production",
-    "environmentEnabled": false,
-    "feature": "Feature 1",
-    "featureEnabled": false,
-  },
-  {
-    "condition": "Condition 2",
-    "conditionEnabled": false,
-    "environment": "Production",
-    "environmentEnabled": false,
-    "feature": "Feature 1",
-    "featureEnabled": false,
-  },
-  {
-    "environment": "Development",
-    "environmentEnabled": false,
-    "feature": "Feature 1",
-    "featureEnabled": false,
-  },
-  {
-    "environment": "Preview",
-    "environmentEnabled": false,
-    "feature": "Feature 1",
-    "featureEnabled": false,
-  },
-  {
-    "condition": "Condition 3",
-    "conditionEnabled": true,
-    "environment": "Production",
-    "environmentEnabled": false,
-    "feature": "Feature 2",
-    "featureEnabled": false,
-  },
-]
-`;
-
-exports[`parseMarkdown > should parse markdown with enabled items 1`] = `
+exports[`parseMarkdown > another example 1`] = `
 {
-  "features": [
-    {
-      "enabled": false,
-      "environments": [
-        {
-          "conditions": [
-            {
-              "enabled": true,
-              "name": "Condition 1",
-            },
-            {
-              "enabled": false,
-              "name": "Condition 2",
-            },
-          ],
-          "enabled": false,
-          "name": "Production",
-        },
-        {
-          "conditions": [],
-          "enabled": false,
-          "name": "Development",
-        },
-        {
-          "conditions": [],
-          "enabled": false,
-          "name": "Preview",
-        },
-      ],
-      "name": "Feature 1",
+  "show-install-script": {
+    "enabled": true,
+    "environments": {
+      "production": {
+        "conditions": {},
+        "enabled": true,
+        "name": "production",
+      },
     },
-    {
-      "enabled": false,
-      "environments": [
-        {
-          "conditions": [
-            {
-              "enabled": true,
-              "name": "Condition 3",
-            },
-          ],
-          "enabled": false,
-          "name": "Production",
-        },
-      ],
-      "name": "Feature 2",
+    "name": "Show install script",
+    "slug": "show-install-script",
+  },
+  "show-logo": {
+    "enabled": true,
+    "environments": {
+      "development": {
+        "conditions": {},
+        "enabled": false,
+        "name": "development",
+      },
+      "preview": {
+        "conditions": {},
+        "enabled": false,
+        "name": "preview",
+      },
+      "production": {
+        "conditions": {},
+        "enabled": false,
+        "name": "production",
+      },
     },
-  ],
+    "name": "Show logo",
+    "slug": "show-logo",
+  },
+}
+`;
+
+exports[`parseMarkdown > should parse markdown with disabled feature 1`] = `
+{
+  "feature-1": {
+    "enabled": false,
+    "environments": {
+      "development": {
+        "conditions": {},
+        "enabled": false,
+        "name": "development",
+      },
+      "preview": {
+        "conditions": {},
+        "enabled": false,
+        "name": "preview",
+      },
+      "production": {
+        "conditions": {},
+        "enabled": false,
+        "name": "production",
+      },
+    },
+    "name": "Feature 1",
+    "slug": "feature-1",
+  },
+  "feature-2": {
+    "enabled": true,
+    "environments": {
+      "production": {
+        "conditions": {},
+        "enabled": false,
+        "name": "production",
+      },
+    },
+    "name": "Feature 2",
+    "slug": "feature-2",
+  },
+}
+`;
+
+exports[`parseMarkdown > should parse markdown with enabled feature 1`] = `
+{
+  "feature-1": {
+    "enabled": true,
+    "environments": {
+      "development": {
+        "conditions": {},
+        "enabled": false,
+        "name": "development",
+      },
+      "preview": {
+        "conditions": {},
+        "enabled": false,
+        "name": "preview",
+      },
+      "production": {
+        "conditions": {},
+        "enabled": false,
+        "name": "production",
+      },
+    },
+    "name": "Feature 1",
+    "slug": "feature-1",
+  },
+  "feature-2": {
+    "enabled": true,
+    "environments": {
+      "production": {
+        "conditions": {},
+        "enabled": false,
+        "name": "production",
+      },
+    },
+    "name": "Feature 2",
+    "slug": "feature-2",
+  },
+}
+`;
+
+exports[`parseMarkdown > should parse markdown with one environment enabled 1`] = `
+{
+  "feature-1": {
+    "enabled": false,
+    "environments": {
+      "development": {
+        "conditions": {},
+        "enabled": false,
+        "name": "development",
+      },
+      "preview": {
+        "conditions": {},
+        "enabled": false,
+        "name": "preview",
+      },
+      "production": {
+        "conditions": {},
+        "enabled": true,
+        "name": "production",
+      },
+    },
+    "name": "Feature 1",
+    "slug": "feature-1",
+  },
+  "feature-2": {
+    "enabled": false,
+    "environments": {
+      "production": {
+        "conditions": {},
+        "enabled": false,
+        "name": "production",
+      },
+    },
+    "name": "Feature 2",
+    "slug": "feature-2",
+  },
+}
+`;
+
+exports[`parseMarkdown > should parse markdown with two environments enabled in different features 1`] = `
+{
+  "feature-1": {
+    "enabled": false,
+    "environments": {
+      "development": {
+        "conditions": {},
+        "enabled": false,
+        "name": "development",
+      },
+      "preview": {
+        "conditions": {},
+        "enabled": false,
+        "name": "preview",
+      },
+      "production": {
+        "conditions": {},
+        "enabled": false,
+        "name": "production",
+      },
+    },
+    "name": "Feature 1",
+    "slug": "feature-1",
+  },
+  "feature-2": {
+    "enabled": true,
+    "environments": {
+      "preview": {
+        "conditions": {},
+        "enabled": true,
+        "name": "preview",
+      },
+      "production": {
+        "conditions": {},
+        "enabled": false,
+        "name": "production",
+      },
+    },
+    "name": "Feature 2",
+    "slug": "feature-2",
+  },
 }
 `;
 
 exports[`parseMarkdown > should parse valid markdown correctly 1`] = `
 {
-  "features": [
-    {
-      "enabled": false,
-      "environments": [
-        {
-          "conditions": [
-            {
-              "enabled": false,
-              "name": "Condition 1",
-            },
-            {
-              "enabled": false,
-              "name": "Condition 2",
-            },
-          ],
-          "enabled": false,
-          "name": "Production",
-        },
-        {
-          "conditions": [],
-          "enabled": false,
-          "name": "Preview",
-        },
-      ],
-      "name": "Feature 1",
+  "feature-1": {
+    "enabled": false,
+    "environments": {
+      "preview": {
+        "conditions": {},
+        "enabled": false,
+        "name": "preview",
+      },
+      "production": {
+        "conditions": {},
+        "enabled": false,
+        "name": "production",
+      },
     },
-  ],
+    "name": "Feature 1",
+    "slug": "feature-1",
+  },
 }
 `;
