@@ -2,12 +2,12 @@
   "name": "next-flag",
   "description": "",
   "version": "0.0.0",
-  "author": "",
-  "license": "",
+  "author": "Tim Mikeladze <tim.mikeladze@gmail.com>",
+  "license": "MIT",
   "keywords": [],
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/TimMikeladze/next-flag"
   },
   "scripts": {
     "dev": "concurrently \"pnpm build --watch\" \"pnpm test\" ",
