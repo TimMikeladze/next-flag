@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src/index.ts', 'src/react'],
+  entry: ['src/index.ts', 'src/client', 'src/react'],
   treeshake: true,
   sourcemap: 'inline',
   minify: true,

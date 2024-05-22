@@ -12,8 +12,7 @@ export const nf = new NextFlag({
   },
   paths: [
     {
-      owner: 'TimMikeladze',
-      repo: 'next-flag',
+      repository: 'TimMikeladze/next-flag',
       issue: 3,
     },
   ],

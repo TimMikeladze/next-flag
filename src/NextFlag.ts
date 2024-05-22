@@ -10,6 +10,7 @@ import {
 } from './types';
 import { verifyWebhookSignature } from './webhook';
 import { parseMarkdown } from './parser';
+import { isEnabled } from './client/isEnabled';
 
 export class NextFlag {
   private secret: string;
@@ -43,26 +44,30 @@ export class NextFlag {
     this.unstable_cache = options.cache?.unstable_cache;
     this.revalidateTag = options.cache?.revalidateTag;
 
-    this.paths = options.paths.map((x) => ({
-      key: NextFlag.pathToKey(x),
-      owner: x.owner.toLowerCase(),
-      repo: x.repo.toLowerCase(),
-      issue: x.issue,
-    }));
+    this.paths = options.paths.map((x) => {
+      if (!NextFlag.isValidRepo(x.repository)) {
+        throw new Error('Invalid repo');
+      }
+      return {
+        project: NextFlag.pathToProject(x),
+        repository: x.repository.toLowerCase(),
+        issue: x.issue,
+      };
+    });
 
     if (!this.paths.length) {
       throw new Error('At least one path must be provided');
     }
 
     if (this.paths.length > 1) {
-      const set = new Set(this.paths.map((path) => path.key));
+      const set = new Set(this.paths.map((path) => path.project));
       if (set.size !== this.paths.length) {
-        throw new Error('Each path must have a unique key');
+        throw new Error('Each path must have a unique project');
       }
     }
   }
 
-  public static getDefaultEnvironment(): string {
+  private static getDefaultEnvironment(): string {
     return (
       process.env.VERCEL_ENV ||
       process.env.ENV ||
@@ -71,22 +76,36 @@ export class NextFlag {
     )?.toLowerCase() as string;
   }
 
-  public static pathToKey(path: NextFlagOptionsPath) {
-    if (path.key) {
-      return path.key;
+  private static pathToProject(path: NextFlagOptionsPath) {
+    if (path.project) {
+      return path.project;
     }
-    return `${path.owner.toLowerCase()}/${path.repo.toLowerCase()}/${path.issue}`;
+    return `${path.repository.toLowerCase()}/${path.issue}`;
   }
 
-  async getCachedFeatures(key: string) {
-    const fn = async (pathKey: string) => {
-      const foundPath = this.paths.find((path) => path.key === pathKey);
+  private static isValidRepo(repo: string) {
+    return repo.split('/').length === 2;
+  }
+
+  private static getRepoOwner(repo: string) {
+    return repo.split('/')[0];
+  }
+
+  private static getRepoName(repo: string) {
+    return repo.split('/')[1];
+  }
+
+  private async getCachedFeatures(project: string) {
+    const fn = async (pathProject: string) => {
+      const foundPath = this.paths.find((path) => path.project === pathProject);
       if (!foundPath) {
         throw new Error('Path not found');
       }
+      const owner = NextFlag.getRepoOwner(foundPath.repository);
+      const repo = NextFlag.getRepoName(foundPath.repository);
       const { data } = await this.octokit.rest.issues.get({
-        owner: foundPath.owner,
-        repo: foundPath.repo,
+        owner,
+        repo,
         issue_number: foundPath.issue,
       });
       if (!data.body) {
@@ -98,7 +117,7 @@ export class NextFlag {
 
     // No webhook enabled, therefore no caching.
     if (!this.secret) {
-      return fn(key);
+      return fn(project);
     }
 
     // eslint-disable-next-line camelcase
@@ -107,40 +126,43 @@ export class NextFlag {
         (x) => x.unstable_cache
       ))) as UnstableCache;
 
-    return unstable_cache(fn, [key], {
-      tags: [key],
-    })(key);
+    return unstable_cache(fn, [project], {
+      tags: [project],
+    })(project);
   }
 
-  async GET(req: NextRequest) {
-    const key = req.nextUrl.searchParams.get('key') as string;
+  public async GET(req: NextRequest) {
+    const project = req.nextUrl.searchParams.get('project') as string;
 
-    return NextResponse.json(await this.getFeatures(key));
+    return NextResponse.json(await this.getFeatures(project));
   }
 
-  async isEnabled(feature: string | string[], key?: string): Promise<boolean> {
-    const features = await this.getFeatures(key);
-    if (features.length === 0) {
-      return false;
-    }
-    const array = Array.isArray(feature) ? feature : [feature];
-    return array.every((x) => features.includes(x));
+  public async isFeatureEnabled(
+    feature: string | string[],
+    project?: string
+  ): Promise<boolean> {
+    const features = await this.getFeatures(
+      project || process.env.NEXT_PUBLIC_NEXT_FLAG_PROJECT
+    );
+    return isEnabled(feature, features);
   }
 
-  async getFeatures(key?: string): Promise<GetFeatures> {
-    if (this.paths.length > 1 && !key) {
-      throw new Error('key must be provided when multiple paths are defined');
+  public async getFeatures(project?: string): Promise<GetFeatures> {
+    if (this.paths.length > 1 && !project) {
+      throw new Error(
+        'project must be provided when multiple paths are defined'
+      );
     }
-    if (key && !this.paths.find((path) => path.key === key)) {
-      throw new Error('key not found');
+    if (project && !this.paths.find((path) => path.project === project)) {
+      throw new Error('project not found');
     }
-    const path = this.paths.find((x) => x.key === key) || this.paths[0];
+    const path = this.paths.find((x) => x.project === project) || this.paths[0];
 
-    if (!path.key) {
+    if (!path.project) {
       throw new Error('path not found');
     }
 
-    const res = await this.getCachedFeatures(path.key);
+    const res = await this.getCachedFeatures(path.project);
 
     const environment = await this.getEnvironment();
 
@@ -168,11 +190,11 @@ export class NextFlag {
     return Array.from(features) as GetFeatures;
   }
 
-  async POST(req: NextRequest) {
+  public async POST(req: NextRequest) {
     return this.githubWebhook(req);
   }
 
-  async githubWebhook(req: NextRequest) {
+  private async githubWebhook(req: NextRequest) {
     if (!this.secret) {
       return NextResponse.json(
         { error: 'Secret not found. GitHub webhook disabled.' },
@@ -185,23 +207,19 @@ export class NextFlag {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 
-    const foundPath = this.paths.find((path) => {
-      const owner = body.repository.full_name.split('/')[0].toLowerCase();
-      const repo = body.repository.full_name.split('/')[1].toLowerCase();
-
-      return (
-        path.owner.toLowerCase() === owner &&
-        path.repo.toLowerCase() === repo &&
+    const foundPath = this.paths.find(
+      (path) =>
+        path.repository.toLowerCase() ===
+          body.repository.full_name.toLowerCase() &&
         path.issue === body.issue.number
-      );
-    });
+    );
 
     if (!foundPath) {
       return NextResponse.json({ error: 'Path not found' }, { status: 404 });
     }
 
-    if (!foundPath.key) {
-      throw new Error('Path key not found');
+    if (!foundPath.project) {
+      throw new Error('Path project not found');
     }
 
     const revalidateTag = (this.revalidateTag ||
@@ -209,7 +227,7 @@ export class NextFlag {
         (x) => x.revalidateTag
       ))) as RevalidateTag;
 
-    revalidateTag(foundPath.key);
+    revalidateTag(foundPath.project);
 
     return NextResponse.json({ success: true });
   }

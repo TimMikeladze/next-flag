@@ -6,13 +6,14 @@ import styles from './page.module.css';
 
 const ClientComponent = () => {
   const nf = useNextFlag();
+  const nextLogo = nf.isFeatureEnabled('next-logo');
 
   if (nf.loading) {
     return null;
   }
 
   return (
-    nf.isEnabled('show-logo') && (
+    nextLogo && (
       <Image
         className={styles.logo}
         src="/next.svg"

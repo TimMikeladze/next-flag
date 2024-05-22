@@ -1,5 +1,7 @@
 /* global RequestInit */
 
+import { ReactNode } from 'react';
+
 export interface Condition {
   enabled: boolean;
   name: string;
@@ -38,9 +40,8 @@ export interface Features {
 
 export interface NextFlagOptionsPath {
   issue: number;
-  key?: string;
-  owner: string;
-  repo: string;
+  project?: string;
+  repository: string;
 }
 
 export type RevalidateTag = (key: string) => void;
@@ -102,12 +103,30 @@ export interface NextFlagWebhookBody {
 
 export interface UseNextFlagHookProps {
   endpoint?: string;
+  project?: string;
 
-  key?: string;
   requestInit?: RequestInit;
 }
 
-export interface IsFeatureEnabledArgs {
-  feature: string | string[];
-  features: Features;
+export interface NextFlagProviderProps {
+  children?: ReactNode;
+
+  endpoint?: string;
+  project?: string;
+
+  requestInit?: RequestInit;
+}
+
+export interface IsFeatureEnabledOptions {
+  endpoint?: string;
+  project?: string;
+
+  requestInit?: RequestInit;
+}
+
+export interface GetFeaturesArgs {
+  endpoint?: string;
+  project?: string;
+
+  requestInit?: RequestInit;
 }

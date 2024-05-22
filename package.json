@@ -11,7 +11,7 @@
   },
   "scripts": {
     "dev": "concurrently \"pnpm build --watch\" \"pnpm test\" ",
-    "build": "tsup --onSuccess \"pnpm link:self\"",
+    "build": "tsup --onSuccess \"pnpm link:self && pnpm doc\"",
     "type-check": "tsc",
     "lint": "eslint --ignore-path .gitignore \"{src,tests}/**/*.+(ts|js|tsx|jsx)\"",
     "lint:fix": "pnpm lint --fix && prettier --write .",
@@ -22,7 +22,8 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "release": "pnpm build && pnpm release-it",
-    "link:self": "pnpm link --global"
+    "link:self": "pnpm link --global",
+    "doc": "tsdoc --src=src/NextFlag.ts,src/react/useNextFlag.ts,src/react/NextFlagProvider.tsx,src/client/getFeatures.ts,src/client/isFeatureEnabled.ts"
   },
   "types": "./dist/index.d.ts",
   "exports": {
@@ -33,6 +34,10 @@
     "./react": {
       "require": "./dist/react/index.js",
       "import": "./dist/react/index.mjs"
+    },
+    "./client": {
+      "require": "./dist/client/index.js",
+      "import": "./dist/client/index.mjs"
     }
   },
   "files": [
@@ -116,6 +121,7 @@
     "storybook": "8.1.1",
     "ts-node": "10.9.2",
     "tsconfig-paths": "4.2.0",
+    "tsdoc-markdown": "^0.6.0",
     "tsup": "8.0.2",
     "tsx": "4.10.5",
     "typescript": "5.4.5",
