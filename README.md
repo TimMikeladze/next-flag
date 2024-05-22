@@ -18,7 +18,9 @@ pnpm add next-flag
 
 ## 🚀 Getting started
 
-### 📄 1. Create a new issue
+> Check-out a complete [NextJS example](./examples/nextjs-example/).
+
+### 📄 Create a new issue
 
 First, create a new issue in your repository with the following format. It is optional to include a list of environments that the feature should be enabled in.
 
@@ -46,13 +48,13 @@ First, create a new issue in your repository with the following format. It is op
 - [ ] Enabled
 ```
 
-### 🐙 2. Setup GitHub
+### 🐙 Setup GitHub
 
 Now let's get an auth token from GitHub and create a Webhook.
 
 1. [Create a new personal access token](https://github.com/settings/tokens?type=beta) in GitHub with **Read access to issues and metadata**.
 2. Create a GitHub Webhook by navigating to `https://github.com/<OWNER>/<REPO>/settings/hooks/new`
-   - Set the \*_Payload URL_ to `https://<YOUR_DOMAIN>/api/next-flag`
+   - Set the \*_Payload URL_ to `https://<YOUR_DOMAIN>/api/next-flag`. Hint: Use [ngrok](https://ngrok.com/) for local development.
    - Set the **Content type** to `application/json`
    - Set the **Secret** to a random string
    - Select the "Issues" event.
@@ -63,7 +65,7 @@ NEXT_FLAG_GITHUB_TOKEN=""
 NEXT_FLAG_WEBHOOK_SECRET=""
 ```
 
-### 💻 3. Configure your NextJS app
+### 💻 Configure your NextJS app
 
 Finally, let's write some code to use the `next-flag` package.
 
@@ -204,19 +206,26 @@ NEXT_PUBLIC_NEXT_FLAG_ENDPOINT="https://<YOUR_DOMAIN>/api/next-flag"
 import { NextFlag } from 'next-flag';
 
 export const nf = new NextFlag({
-    paths: [
-        {
-            project: 'project-1',
-            repository: '<OWNER>/<REPO>',
-            issue: 123,
-        },
-        {
-            project: 'project-2',
-            repository: '<OWNER>/<REPO>',
-            issue: 124,
-        },
-    ],
+  paths: [
+    {
+      project: 'project-1',
+      repository: '<OWNER>/<REPO>',
+      issue: 123,
+    },
+    {
+      project: 'project-2',
+      repository: '<OWNER>/<REPO>',
+      issue: 124,
+    },
+  ],
 });
+```
+
+### ⛔️ Usage without a Webhook
+
+Using a Github Webhook is optional, but highly recommended. The webhook is responsible for invalidating the NextJS Cache. Without this mechanism, caching of feature flags will be disabled and the feature flags will be fetched on every request.
+
+If you don't want to use a Webhook simply omit the `NEXT_FLAG_WEBHOOK_SECRET` from the `.env` file.
 
 ## 📚 TSDoc
 
@@ -297,4 +306,7 @@ export const nf = new NextFlag({
 | `POST` | `(req: NextRequest) => Promise<NextResponse<{ error: string; }> or NextResponse<{ success: boolean; }>>` |
 
 <!-- TSDOC_END -->
+
+```
+
 ```
