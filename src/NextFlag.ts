@@ -34,6 +34,12 @@ export class NextFlag {
     this.token =
       options.github?.token || (process.env.NEXT_FLAG_GITHUB_TOKEN as string);
 
+    if (!this.secret) {
+      console.warn(
+        'NEXT_FLAG_WEBHOOK_SECRET not provided. It is suggested to configure a GitHub Webhook in order to activate NextJS caching. Without caching, the GitHub API will be queried for every feature flag check.'
+      );
+    }
+
     this.getEnvironment =
       options.getEnvironment || NextFlag.getDefaultEnvironment;
 
@@ -168,6 +174,9 @@ export class NextFlag {
 
     const features = Object.keys(res).reduce((acc, curr) => {
       const feature = res[curr].enabled;
+      if (!feature) {
+        return acc;
+      }
       const hasEnvironments = Object.keys(res[curr].environments).length > 0;
       if (!feature && !hasEnvironments) {
         return acc;
