@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+
 import { nf } from './nf';
 
 export const POST = (req: NextRequest) => nf.POST(req);

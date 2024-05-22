@@ -1,5 +1,9 @@
 # 🏁 next-flag
 
+Feature flags powered by GitHub issues and NextJS. Toggle the features of your app without deploying a new version purely through GitHub ticking a checkbox in an issue. Uses GitHub Webhooks, NextJS API Routes and the NextJS Cache under the hood to provide a totally free and easy-to-use feature flagging system for your NextJS app.
+
+![architecture](./docs/architecture.png)
+
 ## 📡 Install
 
 ```console
@@ -10,7 +14,209 @@ yarn add next-flag
 pnpm add next-flag
 ```
 
+> 👋 Hello there! Follow me [@linesofcode](https://twitter.com/linesofcode) or visit [linesofcode.dev](https://linesofcode.dev) for more cool projects like this one.
+
 ## 🚀 Getting started
+
+### 📄 1. Create a new issue
+
+First, create a new issue in your repository with the following format. It is optional to include a list of environments that the feature should be enabled in.
+
+```markdown
+# 🏁 Feature Flags
+
+## WIP feature
+
+- [x] Enabled
+
+## New feature
+
+- [x] Enabled
+
+### Production
+
+- [ ] Enabled
+
+### Preview
+
+- [ ] Enabled
+
+### Development
+
+- [ ] Enabled
+```
+
+### 🐙 2. Setup GitHub
+
+Now let's get an auth token from GitHub and create a Webhook.
+
+1. [Create a new personal access token](https://github.com/settings/tokens?type=beta) in GitHub with **Read access to issues and metadata**.
+2. Create a GitHub Webhook by navigating to `https://github.com/<OWNER>/<REPO>/settings/hooks/new`
+   - Set the \*_Payload URL_ to `https://<YOUR_DOMAIN>/api/next-flag`
+   - Set the **Content type** to `application/json`
+   - Set the **Secret** to a random string
+   - Select the "Issues" event.
+3. Add the GitHub token and webhook secret to the `.env` file of your NextJS app.
+
+```bash
+NEXT_FLAG_GITHUB_TOKEN=""
+NEXT_FLAG_WEBHOOK_SECRET=""
+```
+
+### 💻 3. Configure your NextJS app
+
+Finally, let's write some code to use the `next-flag` package.
+
+```ts
+// src/app/api/next-flag/nf.ts
+import { NextFlag } from 'next-flag';
+
+export const nf = new NextFlag({
+  paths: [
+    {
+      repository: '<OWNER>/<REPO>',
+      issue: 123,
+    },
+  ],
+});
+```
+
+Next, create a new API route to handle the incoming Webhook requests.
+
+```ts
+// src/app/api/next-flag/route.ts
+import { NextRequest } from 'next/server';
+
+import { nf } from './nf';
+
+export const POST = (req: NextRequest) => nf.POST(req);
+
+export const GET = (req: NextRequest) => nf.GET(req);
+```
+
+You can now use the `nf` instance to check if a feature is enabled in your app.
+
+This can be done in a React Server Component:
+
+```ts
+// src/app/page.tsx
+'use server';
+
+import { nf } from './api/next-flag/nf';
+
+export default async function Page() {
+  const wipFeatureEnabled = await nf.isFeatureEnabled('wip-feature');
+
+  return wipFeatureEnabled && <div>WIP feature enabled!</div>;
+}
+```
+
+Or in a React Client Component:
+
+```tsx
+// src/app/components/Feature.tsx
+'use client';
+
+import { useNextFlag } from 'next-flag/react';
+
+export const Feature = () => {
+  const nf = useNextFlag();
+
+  if (nf.loading) {
+    return null;
+  }
+
+  const wipFeatureEnabled = nf.isFeatureEnabled('wip-feature');
+
+  return wipFeatureEnabled && <div>WIP feature enabled!</div>;
+};
+```
+
+You can also wrap your client side app with the `NextFlagProvider` to fetch features once on mount and provide them to child components when using the `useNextFlag` hook.
+
+```tsx
+// src/app/components/Feature.tsx
+'use client';
+
+import { NextFlagProvider, useNextFlag } from 'next-flag/react';
+
+const ContextProvider = () => {
+  return (
+    <NextFlagProvider>
+      <Component />
+    </NextFlagProvider>
+  );
+};
+
+const Component = () => {
+  const nf = useNextFlag();
+  const gettingStarted = nf.isFeatureEnabled('getting-started');
+  return (
+    <>
+      {gettingStarted && (
+        <p>
+          Get started by editing&nbsp;
+          <code className={styles.code}>src/app/page.tsx</code>
+        </p>
+      )}
+    </>
+  );
+};
+```
+
+## 💪 Advanced Usage
+
+### ✅ Getting all features
+
+You can always get all features by calling the `getFeatures` method. You can also open the `/api/next-flag` route in your browser to see the enabled features as a JSON array.
+
+```ts
+import { nf } from './api/next-flag/nf';
+import { getFeatures, isFeatureEnabled } from 'next-flag/client';
+
+// server side
+const features = await nf.getFeatures();
+// or client side with an HTTP request
+const features = await getFeatures();
+// check if a feature is enabled
+const wipFeatureEnabled = await isFeatureEnabled('wip-feature');
+```
+
+### 📦 Deploying a stand-alone next-flag server
+
+You can deploy the `next-flag` server as a separate NextJS app and use it as a feature flagging service for multiple NextJS apps.
+
+1. Follow the steps above to setup GitHub and create a new NextJS app.
+2. When initializing the `NextFlag` instance, pass multiple projects to the `paths` option.
+3. Deploy this NextJS app somewhere...
+4. In a different NextJS app:
+   1. Configure the `.env` file with a `NEXT_PUBLIC_NEXT_FLAG_PROJECT` and `NEXT_PUBLIC_NEXT_FLAG_ENDPOINT`.
+   2. Use `isFeatureEnabled` from the `next-flag/client` package to check if a feature is enabled in a React Server Component.
+   3. Use the `useNextFlag` hook from the `next-flag/react` package to check if a feature is enabled in a React Client Component.
+
+```bash
+NEXT_PUBLIC_NEXT_FLAG_PROJECT="project-1"
+NEXT_PUBLIC_NEXT_FLAG_ENDPOINT="https://<YOUR_DOMAIN>/api/next-flag"
+```
+
+```ts
+// src/app/api/next-flag/nf.ts
+import { NextFlag } from 'next-flag';
+
+export const nf = new NextFlag({
+    paths: [
+        {
+            project: 'project-1',
+            repository: '<OWNER>/<REPO>',
+            issue: 123,
+        },
+        {
+            project: 'project-2',
+            repository: '<OWNER>/<REPO>',
+            issue: 124,
+        },
+    ],
+});
 
 ## 📚 TSDoc
 
@@ -91,3 +297,4 @@ pnpm add next-flag
 | `POST` | `(req: NextRequest) => Promise<NextResponse<{ error: string; }> or NextResponse<{ success: boolean; }>>` |
 
 <!-- TSDOC_END -->
+```
