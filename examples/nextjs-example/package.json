@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "next": "14.2.3",
-    "next-flag": "^0.0.1",
+    "next-flag": "^1.0.0",
     "react": "^18",
     "react-dom": "^18"
   },
