@@ -1,4 +1,5 @@
 import { NextFlag } from 'next-flag';
+import { revalidateTag, unstable_cache } from 'next/cache';
 
 export const nf = new NextFlag({
   paths: [
@@ -7,4 +8,8 @@ export const nf = new NextFlag({
       issue: 3,
     },
   ],
+  cache: {
+    revalidateTag,
+    unstable_cache,
+  },
 });

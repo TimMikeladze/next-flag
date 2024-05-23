@@ -85,6 +85,7 @@ Finally, let's write some code to use the `next-flag` package.
 ```ts
 // src/app/api/next-flag/nf.ts
 import { NextFlag } from 'next-flag';
+import { revalidateTag, unstable_cache } from 'next/cache';
 
 export const nf = new NextFlag({
   paths: [
@@ -93,6 +94,10 @@ export const nf = new NextFlag({
       issue: 123,
     },
   ],
+  cache: {
+    revalidateTag,
+    unstable_cache,
+  },
 });
 ```
 
@@ -249,6 +254,7 @@ NEXT_PUBLIC_NEXT_FLAG_ENDPOINT="https://<YOUR_DOMAIN>/api/next-flag"
 ```ts
 // src/app/api/next-flag/nf.ts
 import { NextFlag } from 'next-flag';
+import { revalidateTag, unstable_cache } from 'next/cache';
 
 export const nf = new NextFlag({
   paths: [
@@ -263,6 +269,10 @@ export const nf = new NextFlag({
       issue: 124,
     },
   ],
+  cache: {
+    revalidateTag,
+    unstable_cache,
+  },
 });
 ```
 
