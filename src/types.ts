@@ -69,6 +69,8 @@ export interface NextFlagOptions {
   };
 
   paths: NextFlagOptionsPath[];
+
+  standalone?: boolean;
 }
 
 export type GetFeatures = string[];
@@ -103,6 +105,8 @@ export interface NextFlagWebhookBody {
 
 export interface UseNextFlagHookProps {
   endpoint?: string;
+  environment?: string;
+
   project?: string;
 
   requestInit?: RequestInit;
@@ -112,6 +116,7 @@ export interface NextFlagProviderProps {
   children?: ReactNode;
 
   endpoint?: string;
+  environment?: string;
   project?: string;
 
   requestInit?: RequestInit;
@@ -119,13 +124,16 @@ export interface NextFlagProviderProps {
 
 export interface IsFeatureEnabledOptions {
   endpoint?: string;
-  project?: string;
+  environment?: string;
 
+  project?: string;
   requestInit?: RequestInit;
 }
 
 export interface GetFeaturesArgs {
   endpoint?: string;
+  environment?: string;
+
   project?: string;
 
   requestInit?: RequestInit;

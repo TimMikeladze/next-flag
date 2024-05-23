@@ -1,4 +1,5 @@
 import { GetFeatures, GetFeaturesArgs } from '../types';
+import { getDefaultEnvironment } from './getDefaultEnvironment';
 
 export const getFeatures = async (
   props: GetFeaturesArgs = {}
@@ -16,8 +17,22 @@ export const getFeatures = async (
   const project =
     props.project || (process.env.NEXT_PUBLIC_NEXT_FLAG_PROJECT as string);
 
+  const environment = props.environment || getDefaultEnvironment();
+
+  let query = '';
+
   if (project) {
-    url = `${url}?project=${project}`;
+    query += `project=${project}`;
+  }
+
+  if (environment) {
+    query += query
+      ? `&environment=${environment}`
+      : `environment=${environment}`;
+  }
+
+  if (query) {
+    url += `?${query}`;
   }
 
   const res = await fetch(url, {

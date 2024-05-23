@@ -11,6 +11,7 @@ import {
 import { verifyWebhookSignature } from './webhook';
 import { parseMarkdown } from './parser';
 import { isEnabled } from './client/isEnabled';
+import { getDefaultEnvironment } from './client';
 
 export class NextFlag {
   private secret: string;
@@ -27,7 +28,10 @@ export class NextFlag {
 
   private getEnvironment: () => Promise<string> | string;
 
+  private standalone: boolean = false;
+
   constructor(options: NextFlagOptions) {
+    this.standalone = options.standalone || false;
     this.secret =
       options.github?.secret ||
       (process.env.NEXT_FLAG_WEBHOOK_SECRET as string);
@@ -40,8 +44,7 @@ export class NextFlag {
       );
     }
 
-    this.getEnvironment =
-      options.getEnvironment || NextFlag.getDefaultEnvironment;
+    this.getEnvironment = options.getEnvironment || getDefaultEnvironment;
 
     this.octokit = new Octokit({
       auth: this.token,
@@ -73,15 +76,6 @@ export class NextFlag {
     }
   }
 
-  private static getDefaultEnvironment(): string {
-    return (
-      process.env.VERCEL_ENV ||
-      process.env.ENV ||
-      process.env.STAGE ||
-      process.env.NODE_ENV
-    )?.toLowerCase() as string;
-  }
-
   private static pathToProject(path: NextFlagOptionsPath) {
     if (path.project) {
       return path.project;
@@ -101,7 +95,7 @@ export class NextFlag {
     return repo.split('/')[1];
   }
 
-  private async getCachedFeatures(project: string) {
+  private async getCachedFeatures(project: string, environment: string) {
     const fn = async (pathProject: string) => {
       const foundPath = this.paths.find((path) => path.project === pathProject);
       if (!foundPath) {
@@ -132,45 +126,80 @@ export class NextFlag {
         (x) => x.unstable_cache
       ))) as UnstableCache;
 
-    return unstable_cache(fn, [project], {
-      tags: [project],
+    return unstable_cache(fn, [project, environment], {
+      tags: [project, environment],
     })(project);
   }
 
   public async GET(req: NextRequest) {
     const project = req.nextUrl.searchParams.get('project') as string;
+    let environment = req.nextUrl.searchParams.get('environment') as string;
 
-    return NextResponse.json(await this.getFeatures(project));
+    // If not running in standalone mode, the environment must be sourced from the server environment.
+    if (environment && !this.standalone) {
+      environment = getDefaultEnvironment();
+    }
+
+    return NextResponse.json(
+      await this.getFeatures({
+        environment,
+        project,
+      })
+    );
   }
 
   public async isFeatureEnabled(
     feature: string | string[],
-    project?: string
+    options: {
+      environment?: string;
+      project?: string;
+    } = {}
   ): Promise<boolean> {
-    const features = await this.getFeatures(
-      project || process.env.NEXT_PUBLIC_NEXT_FLAG_PROJECT
-    );
+    const features = await this.getFeatures({
+      environment: options.environment,
+      project: options.project,
+    });
     return isEnabled(feature, features);
   }
 
-  public async getFeatures(project?: string): Promise<GetFeatures> {
-    if (this.paths.length > 1 && !project) {
+  public async getFeatures(
+    options: {
+      environment?: string;
+      project?: string;
+    } = {}
+  ): Promise<GetFeatures> {
+    const { environment, project } = options;
+
+    const requestedProject = (
+      project || (process.env.NEXT_PUBLIC_NEXT_FLAG_PROJECT as string)
+    ).toLowerCase();
+
+    const requestedEnvironment = (
+      environment || (await this.getEnvironment())
+    ).toLowerCase();
+
+    if (this.paths.length > 1 && !requestedProject) {
       throw new Error(
         'project must be provided when multiple paths are defined'
       );
     }
-    if (project && !this.paths.find((path) => path.project === project)) {
+    if (
+      requestedProject &&
+      !this.paths.find((path) => path.project === requestedProject)
+    ) {
       throw new Error('project not found');
     }
-    const path = this.paths.find((x) => x.project === project) || this.paths[0];
+    const path =
+      this.paths.find((x) => x.project === requestedProject) || this.paths[0];
 
     if (!path.project) {
       throw new Error('path not found');
     }
 
-    const res = await this.getCachedFeatures(path.project);
-
-    const environment = await this.getEnvironment();
+    const res = await this.getCachedFeatures(
+      path.project,
+      requestedEnvironment
+    );
 
     const features = Object.keys(res).reduce((acc, curr) => {
       const feature = res[curr].enabled;
@@ -185,7 +214,7 @@ export class NextFlag {
         acc.add(curr);
         return acc;
       }
-      const foundEnvironment = res[curr].environments[environment];
+      const foundEnvironment = res[curr].environments[requestedEnvironment];
       if (!foundEnvironment) {
         return acc;
       }
@@ -207,7 +236,7 @@ export class NextFlag {
     if (!this.secret) {
       return NextResponse.json(
         { error: 'Secret not found. GitHub webhook disabled.' },
-        { status: 401 }
+        { status: 200 }
       );
     }
 
@@ -224,7 +253,7 @@ export class NextFlag {
     );
 
     if (!foundPath) {
-      return NextResponse.json({ error: 'Path not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Path not found' }, { status: 200 });
     }
 
     if (!foundPath.project) {

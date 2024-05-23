@@ -25,7 +25,7 @@ export const NextFlagProvider = (props: NextFlagProviderProps) => {
       .finally(() => {
         setLoading(false);
       });
-  }, [props.endpoint, props.project, props.requestInit]);
+  }, [props.endpoint, props.project, props.requestInit, props.environment]);
 
   if (loading) {
     return null;

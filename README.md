@@ -107,7 +107,7 @@ Next, create a new API route to handle the incoming Webhook requests.
 // src/app/api/next-flag/route.ts
 import { NextRequest } from 'next/server';
 
-import { nf } from './nf';
+import { nf } from '.';
 
 export const POST = (req: NextRequest) => nf.POST(req);
 
@@ -122,7 +122,7 @@ This can be done in a React Server Component:
 // src/app/page.tsx
 'use server';
 
-import { nf } from './api/next-flag/nf';
+import { nf } from './api/next-flag';
 
 export default async function Page() {
   const wipFeatureEnabled = await nf.isFeatureEnabled('wip-feature');
@@ -188,7 +188,7 @@ const Component = () => {
 
 ### 🏝️ Multiple environments or branches
 
-By default `next-flag` will try to read `process.env.VERCEL_ENV || process.env.ENV || process.env.STAGE || process.env.NODE_ENV` to determine the current environment.
+By default `next-flag` will try to read `process.env.NEXT_PUBLIC_VERCEL_ENV || process.env.NEXT_PUBLIC_ENV || process.env.NEXT_PUBLIC_STAGE || process.env.VERCEL_ENV || process.env.ENV || process.env.STAGE || process.env.NODE_ENV` to determine the current environment.
 
 You can customize how the current environment is determined during runtime by passing a `getEnvironment` function to the `NextFlag` constructor.
 
@@ -223,7 +223,7 @@ To associate a feature with a specific environment, add a subheading to the feat
 You can always get all features by calling the `getFeatures` method. You can also open the `/api/next-flag` route in your browser to see the enabled features as a JSON array.
 
 ```ts
-import { nf } from './api/next-flag/nf';
+import { nf } from './api/next-flag';
 import { getFeatures, isFeatureEnabled } from 'next-flag/client';
 
 // server side
@@ -239,7 +239,7 @@ const wipFeatureEnabled = await isFeatureEnabled('wip-feature');
 You can deploy the `next-flag` server as a separate NextJS app and use it as a feature flagging service for multiple NextJS apps.
 
 1. Follow the steps above to setup GitHub and create a new NextJS app.
-2. When initializing the `NextFlag` instance, pass multiple projects to the `paths` option.
+2. When initializing the `NextFlag` instance, pass multiple projects to the `paths` option and set `standalone` to `true`.
 3. Deploy this NextJS app somewhere...
 4. In a different NextJS app:
    1. Configure the `.env` file with a `NEXT_PUBLIC_NEXT_FLAG_PROJECT` and `NEXT_PUBLIC_NEXT_FLAG_ENDPOINT`.
@@ -257,6 +257,7 @@ import { NextFlag } from 'next-flag';
 import { revalidateTag, unstable_cache } from 'next/cache';
 
 export const nf = new NextFlag({
+  standalone: true,
   paths: [
     {
       project: 'project-1',
@@ -273,6 +274,21 @@ export const nf = new NextFlag({
     revalidateTag,
     unstable_cache,
   },
+});
+```
+
+When running in stand-alone mode with multiple projects, you can pass the `project` option to the `isFeatureEnabled` method to check if a feature is enabled in a specific project.
+
+You can pass an `environment` option to the `isFeatureEnabled` method to check if a feature is enabled in a specific environment.
+
+These options will override the default values pulled from the environment variables.
+
+```ts
+import { isFeatureEnabled, getFeatures } from 'next-flag/client';
+
+await isFeatureEnabled('wip-feature', {
+  project: 'project-1',
+  environment: 'development',
 });
 ```
 
