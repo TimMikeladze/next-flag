@@ -5,7 +5,7 @@ Feature flags powered by GitHub issues and NextJS. Toggle the features of your a
 ## ✨ Features
 
 - [x] Enable or disable features by ticking a checkbox in a GitHub issue.
-- [x] Use multiple environments or branches to control where the feature is enabled.
+- [x] Define feature flags across multiple environments or branches.
 - [x] Supports React Server Side and Client Side Components. Powered by the NextJS Cache.
 - [x] Can be deployed as a stand-alone service to manage feature flags for multiple NextJS apps.
 
@@ -67,10 +67,10 @@ Now let's get an auth token from GitHub and create a Webhook.
 
 1. [Create a new personal access token](https://github.com/settings/tokens?type=beta) in GitHub with **Read access to issues and metadata**.
 2. Create a GitHub Webhook by navigating to `https://github.com/<OWNER>/<REPO>/settings/hooks/new`
-   - Set the \*_Payload URL_ to `https://<YOUR_DOMAIN>/api/next-flag`. Hint: Use [ngrok](https://ngrok.com/) for local development.
+   - Set the **Payload URL** to `https://<YOUR_DOMAIN>/api/next-flag`. Hint: Use [ngrok](https://ngrok.com/) for local development.
    - Set the **Content type** to `application/json`
    - Set the **Secret** to a random string
-   - Select the "Issues" event.
+   - Select the **Issues** event.
 3. Add the GitHub token and webhook secret to the `.env` file of your NextJS app.
 
 ```bash
