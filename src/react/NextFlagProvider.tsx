@@ -32,7 +32,8 @@ export const NextFlagProvider = (props: NextFlagProviderProps) => {
   }
 
   if (error) {
-    return <div>NextFlag Error: {error.message}</div>;
+    // eslint-disable-next-line no-console
+    console.error(`NextFlag Error: ${error.message}`);
   }
 
   return (
