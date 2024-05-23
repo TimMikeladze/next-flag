@@ -1,6 +1,13 @@
 # 🏁 next-flag
 
-Feature flags powered by GitHub issues and NextJS. Toggle the features of your app without deploying a new version purely through GitHub ticking a checkbox in an issue. Uses GitHub Webhooks, NextJS API Routes and the NextJS Cache under the hood to provide a totally free and easy-to-use feature flagging system for your NextJS app.
+Feature flags powered by GitHub issues and NextJS. Toggle the features of your app without deploying a new version by ticking a checkbox in the body of a GitHub issue.
+
+## ✨ Features
+
+- [x] Enable or disable features by ticking a checkbox in a GitHub issue.
+- [x] Use multiple environments or branches to control where the feature is enabled.
+- [x] Supports React Server Side and Client Side Components. Powered by the NextJS Cache.
+- [x] Can be deployed as a stand-alone service to manage feature flags for multiple NextJS apps.
 
 > Check-out a fully working [NextJS example](./examples/nextjs-example/) or jump to [Getting started](https://github.com/TimMikeladze/next-flag?tab=readme-ov-file#-getting-started).
 
