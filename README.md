@@ -344,7 +344,3 @@ If you don't want to use a Webhook simply omit the `NEXT_FLAG_WEBHOOK_SECRET` fr
 | `POST` | `(req: NextRequest) => Promise<NextResponse<{ error: string; }> or NextResponse<{ success: boolean; }>>` |
 
 <!-- TSDOC_END -->
-
-```
-
-```
