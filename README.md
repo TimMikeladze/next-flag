@@ -83,7 +83,7 @@ NEXT_FLAG_WEBHOOK_SECRET=""
 Finally, let's write some code to use the `next-flag` package.
 
 ```ts
-// src/app/api/next-flag/nf.ts
+// src/app/api/next-flag/index.ts
 import { NextFlag } from 'next-flag';
 import { revalidateTag, unstable_cache } from 'next/cache';
 
@@ -252,7 +252,7 @@ NEXT_PUBLIC_NEXT_FLAG_ENDPOINT="https://<YOUR_DOMAIN>/api/next-flag"
 ```
 
 ```ts
-// src/app/api/next-flag/nf.ts
+// src/app/api/next-flag/index.ts
 import { NextFlag } from 'next-flag';
 import { revalidateTag, unstable_cache } from 'next/cache';
 

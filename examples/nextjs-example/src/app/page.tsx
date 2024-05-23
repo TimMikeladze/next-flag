@@ -3,7 +3,7 @@
 import styles from './page.module.css';
 import ClientComponent from './ClientComponentWithHook';
 import Image from 'next/image';
-import { nf } from './api/next-flag/nf';
+import { nf } from './api/next-flag';
 import { isFeatureEnabled } from 'next-flag/client';
 import ClientComponentWithContext from './ClientComponentWithContext';
 
