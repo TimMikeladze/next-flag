@@ -2,7 +2,7 @@
 
 Feature flags powered by GitHub issues and NextJS. Toggle the features of your app without deploying a new version purely through GitHub ticking a checkbox in an issue. Uses GitHub Webhooks, NextJS API Routes and the NextJS Cache under the hood to provide a totally free and easy-to-use feature flagging system for your NextJS app.
 
-![architecture](./docs/architecture.png)
+> Check-out a fully working [NextJS example](./examples/nextjs-example/) or jump to [Getting started](https://github.com/TimMikeladze/next-flag?tab=readme-ov-file#-getting-started).
 
 ## 📡 Install
 
@@ -16,9 +16,15 @@ pnpm add next-flag
 
 > 👋 Hello there! Follow me [@linesofcode](https://twitter.com/linesofcode) or visit [linesofcode.dev](https://linesofcode.dev) for more cool projects like this one.
 
-## 🚀 Getting started
+## 🛠️ Architecture
 
-> Check-out a complete [NextJS example](./examples/nextjs-example/).
+![architecture](./docs/architecture.png)
+
+## 🎥 Demo
+
+https://github.com/TimMikeladze/next-flag/assets/702718/d1707ae0-f9cf-4f80-a20f-6a6f9f715dc2
+
+## 🚀 Getting started
 
 ### 📄 Create a new issue
 
