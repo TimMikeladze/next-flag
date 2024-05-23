@@ -20,7 +20,7 @@
   },
   "scripts": {
     "dev": "concurrently \"pnpm build --watch\" \"pnpm test\" ",
-    "build": "tsup --onSuccess \"pnpm link:self && pnpm doc\"",
+    "build": "tsup --onSuccess \"pnpm link:self\"",
     "type-check": "tsc",
     "lint": "eslint --ignore-path .gitignore \"{src,tests}/**/*.+(ts|js|tsx|jsx)\"",
     "lint:fix": "pnpm lint --fix && prettier --write .",
