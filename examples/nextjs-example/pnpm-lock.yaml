@@ -12,8 +12,8 @@ importers:
         specifier: 14.2.3
         version: 14.2.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next-flag:
-        specifier: ^1.0.0
-        version: 1.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.0.1
+        version: 1.0.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18
         version: 18.3.1
@@ -979,8 +979,8 @@ packages:
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
-  next-flag@1.0.0:
-    resolution: {integrity: sha512-AB6bf1O4oBxkpPYvOToa8T4/c3JXE0o04Hr7WdAzcIqA2qQWIM1wk5KHAtx7k2lM3BmidT9c5K8AOeMhHWqExA==}
+  next-flag@1.0.1:
+    resolution: {integrity: sha512-yz0ewX4fH4YZHh/Ss7432DK3KU9XaSj4FIKP2vfGwdQdALs6DLZk9wMfnzdovbqD2VfrYjxrnTMPeiWaxmEF5Q==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: '>=17'
@@ -2505,7 +2505,7 @@ snapshots:
 
   natural-compare@1.4.0: {}
 
-  next-flag@1.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  next-flag@1.0.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@octokit/rest': 20.1.1
       react: 18.3.1
