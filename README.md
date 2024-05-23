@@ -168,6 +168,38 @@ const Component = () => {
 
 ## 💪 Advanced Usage
 
+### 🏝️ Multiple environments or branches
+
+By default `next-flag` will try to read `process.env.VERCEL_ENV || process.env.ENV || process.env.STAGE || process.env.NODE_ENV` to determine the current environment.
+
+You can customize how the current environment is determined during runtime by passing a `getEnvironment` function to the `NextFlag` constructor.
+
+To associate a feature with a specific environment, add a subheading to the feature issue with the name of the environment (case-insensitive).
+
+- When using multiple environments, the top-level feature flag will control whether the feature is enabled or disabled.
+- If the top-level feature flag is disabled, the feature will be disabled in all environments.
+- If the top-level feature flag is enabled, then the environment-specific flags will determine whether the feature is enabled.
+
+```markdown
+# 🏁 Feature Flags
+
+## My feature
+
+- [x] Enabled
+
+### Production
+
+- [ ] Enabled
+
+### Preview
+
+- [ ] Enabled
+
+### Development
+
+- [ ] Enabled
+```
+
 ### ✅ Getting all features
 
 You can always get all features by calling the `getFeatures` method. You can also open the `/api/next-flag` route in your browser to see the enabled features as a JSON array.
