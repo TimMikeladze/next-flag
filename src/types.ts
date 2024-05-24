@@ -8,30 +8,15 @@ export interface Condition {
 }
 
 export interface Environment {
-  conditions: Record<string, Condition>;
   enabled: boolean;
   name: string;
 }
 
 export interface Feature {
+  conditions: Record<string, Condition>;
   enabled: boolean;
   environments: Record<string, Environment>;
   name: string;
-  slug: string;
-}
-
-export interface FlatFeature {
-  condition?: string;
-  conditionEnabled?: boolean;
-  environment?: string;
-
-  environmentEnabled?: boolean;
-
-  feature: string;
-
-  featureEnabled?: boolean;
-
-  slug: string;
 }
 
 export interface Features {

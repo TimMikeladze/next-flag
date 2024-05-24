@@ -39,4 +39,9 @@ describe('parseMarkdown', () => {
     const markdown = loadMarkdown('another-example.md');
     expect(parseMarkdown(markdown)).toMatchSnapshot();
   });
+
+  it('another example with conditions', () => {
+    const markdown = loadMarkdown('another-example-with-conditions.md');
+    expect(parseMarkdown(markdown)).toMatchSnapshot();
+  });
 });

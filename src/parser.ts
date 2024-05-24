@@ -1,83 +1,114 @@
+/* eslint-disable no-loop-func */
+/* eslint-disable no-continue */
+import { parse } from '@textlint/markdown-to-ast';
 import { spaceSlug } from 'space-slug';
-import { Condition, Environment, Feature, Features } from './types';
+import { Environment, Feature, Features } from './types';
+
+interface Node {
+  children?: Node[];
+  depth?: number;
+  raw: string;
+
+  type: string;
+}
 
 export const parseMarkdown = (markdown: string): Features => {
-  const lines = markdown.split('\n');
+  const ast = parse(markdown);
+
+  const isFeatureBlock = (node: Node) =>
+    node.type === 'Header' && node.depth === 2;
+
+  const isEnabled = (node: Node) =>
+    (node.type === 'List' || node.type === 'ListItem') &&
+    node.raw.toLowerCase().trim().startsWith('- [x]');
+
+  const isConditionsBlock = (node: Node) =>
+    node.type === 'Header' &&
+    node.raw.toLowerCase().trim() === '#### conditions' &&
+    node.depth === 4;
+
+  const isEnvironmentsBlock = (node: Node) =>
+    node.type === 'Header' &&
+    node.raw.toLowerCase().startsWith('### ') &&
+    node.depth === 3;
+
+  const cleanStartingCheckbox = (text: string) =>
+    text.replace(/- \[x\]\s*/, '');
+
+  const isList = (node: Node) => node.type === 'List';
+
+  const cleanStartingHash = (text: string) => text.replace(/^#+\s*/, '');
+
   const features: Features = {};
+
   let currentFeature: Feature | null = null;
   let currentEnvironment: Environment | null = null;
-  let currentConditions: Record<string, Condition> = {};
-  let featureEnabled = false;
-  let environmentEnabled = false;
-  let conditionsEnabled = false;
+  let inConditions = false;
+  let inEnvironments = false;
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-
-    if (line.startsWith('## ')) {
-      // New feature section
-      const featureName = line.substring(3).trim();
-      const slug = spaceSlug([featureName]);
-      currentFeature = {
+  for (let i = 0; i < ast.children.length; i++) {
+    const node = ast.children[i] as Node;
+    if (isFeatureBlock(node)) {
+      const featureName = cleanStartingHash(node.raw);
+      const featureSlug = spaceSlug([featureName]);
+      features[featureSlug] = {
         name: featureName,
-        slug,
-        enabled: featureEnabled,
+        enabled: false,
         environments: {},
-      };
-      features[slug] = currentFeature;
-      // Reset environment and conditions for new feature
-      currentEnvironment = null;
-      currentConditions = {};
-      featureEnabled = false;
-    } else if (line.startsWith('### ')) {
-      // New environment section within the current feature
-      const environmentName = spaceSlug([line.substring(4).trim()]);
-      currentEnvironment = {
-        name: environmentName,
-        enabled: environmentEnabled,
         conditions: {},
       };
-      if (currentFeature) {
-        currentFeature.environments[environmentName] = currentEnvironment;
+      currentFeature = features[featureSlug];
+    } else if (currentFeature) {
+      if (isEnabled(node) && !inConditions && !inEnvironments) {
+        currentFeature.enabled = true;
+        continue;
       }
-      // Reset conditions for new environment
-      currentConditions = {};
-      environmentEnabled = false;
-    } else if (line.startsWith('#### Conditions')) {
-      // Conditions section, no additional processing needed
-      // Reset conditions for new conditions section
-      currentConditions = {};
-      conditionsEnabled = false;
-    } else if (line.startsWith('- [ ]') || line.startsWith('- [x]')) {
-      // Handle checkbox lines
-      const enabled = line.startsWith('- [x]');
-      const item = line.substring(6).trim();
-
-      if (currentEnvironment && !item.startsWith('Condition ')) {
-        // Toggle environment enabled state
-        currentEnvironment.enabled = enabled;
-        environmentEnabled = enabled;
-      } else if (currentFeature && !currentEnvironment) {
-        // Toggle feature enabled state
-        currentFeature.enabled = enabled;
-        featureEnabled = enabled;
-      } else if (
-        currentEnvironment &&
-        item.startsWith('Condition ') &&
-        conditionsEnabled
-      ) {
-        // Add condition to the current environment if conditions section is enabled
-        const conditionName = item.substring(11).trim();
-        const conditionSlug = spaceSlug([conditionName]);
-        currentConditions[conditionSlug] = {
-          name: conditionName,
-          enabled,
-        };
-        currentEnvironment.conditions = currentConditions;
+      if (isConditionsBlock(node)) {
+        inConditions = true;
+        currentEnvironment = null;
+        continue;
       }
-      // Check if conditions section is enabled
-      if (item === 'Conditions' && (currentEnvironment || currentFeature)) {
-        conditionsEnabled = enabled;
+      if (inConditions && !inEnvironments) {
+        if (isList(node)) {
+          (node as Node).children?.forEach((item) => {
+            const enabled = isEnabled(item);
+            const conditionName = spaceSlug([cleanStartingCheckbox(item.raw)]);
+            if (currentFeature) {
+              currentFeature.conditions[conditionName] = {
+                name: conditionName,
+                enabled,
+              };
+            }
+          });
+        } else {
+          inConditions = false;
+        }
+      }
+      if (!inConditions) {
+        if (isEnvironmentsBlock(node)) {
+          inEnvironments = true;
+          const slug = spaceSlug([cleanStartingHash(node.raw)]);
+          currentEnvironment = {
+            name: cleanStartingHash(node.raw),
+            enabled: isEnabled(node),
+          };
+          currentFeature.environments[slug] = currentEnvironment;
+        } else if (currentEnvironment && isList(node)) {
+          (node as Node).children?.forEach((item) => {
+            const enabled = isEnabled(item);
+            const environmentName = spaceSlug([
+              cleanStartingCheckbox(item.raw),
+            ]);
+            if (currentFeature) {
+              currentFeature.environments[environmentName] = {
+                name: environmentName,
+                enabled,
+              };
+            }
+          });
+        } else {
+          inEnvironments = false;
+        }
       }
     }
   }

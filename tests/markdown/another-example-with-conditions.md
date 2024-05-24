@@ -4,13 +4,18 @@
 
 - [x] Enabled
 
+#### Conditions
+
+- [ ] Condition 1
+- [x] Condition 2
+
 ### Production
 
 - [ ] Enabled
 
 ### Preview
 
-- [ ] Enabled
+- [x] Enabled
 
 ### Development
 
@@ -20,6 +25,16 @@
 
 - [x] Enabled
 
+#### Conditions
+
+- [ ] Condition 5
+- [x] Condition 6
+
 ### Production
+
+- [x] Enabled
+  
+
+## Show footer
 
 - [x] Enabled
