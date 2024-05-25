@@ -12,8 +12,8 @@ importers:
         specifier: 14.2.3
         version: 14.2.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next-flag:
-        specifier: ^1.2.1
-        version: 1.2.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.2.2
+        version: 1.2.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18
         version: 18.3.1
@@ -1102,8 +1102,8 @@ packages:
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
-  next-flag@1.2.1:
-    resolution: {integrity: sha512-aMxrB1Cu0DTNRBtjWXf6lydTX80Y4QhkE+qR96a+7k+81F2Kdh0ckvIXyiCQTUxKQmk/nwHWj+7r08eIq/0T+Q==}
+  next-flag@1.2.2:
+    resolution: {integrity: sha512-WdCaLlj6iwba0PkyjW54AwBzk/xX3j0M01sNVIX87LT9udLl9mJZaEtx5xMfdl5ehuf70E3rW/ox28Fgx3uSng==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: '>=17'
@@ -2863,7 +2863,7 @@ snapshots:
 
   natural-compare@1.4.0: {}
 
-  next-flag@1.2.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  next-flag@1.2.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@octokit/rest': 20.1.1
       '@textlint/markdown-to-ast': 14.0.4
