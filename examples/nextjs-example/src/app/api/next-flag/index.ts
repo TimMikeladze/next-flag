@@ -1,6 +1,5 @@
 import { NextFlag } from 'next-flag';
 import { revalidateTag, unstable_cache } from 'next/cache';
-import { NextRequest } from 'next/server';
 
 export const nf = new NextFlag({
   paths: [
@@ -12,7 +11,7 @@ export const nf = new NextFlag({
       },
     },
   ],
-  async requestToContext(req: NextRequest) {
+  async requestToContext(req) {
     return {
       isAdmin: false,
     };

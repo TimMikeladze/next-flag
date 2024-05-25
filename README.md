@@ -7,6 +7,7 @@ Feature flags powered by GitHub issues and NextJS. Toggle the features of your a
 - [x] Enable or disable features by ticking a checkbox in a GitHub issue.
 - [x] Define feature flags across multiple environments or branches.
 - [x] Supports React Server Side and Client Side Components. Powered by the NextJS Cache.
+- [x] Define custom conditions that are evaluated at runtime to enable or disable features.
 - [x] Can be deployed as a stand-alone service to manage feature flags for multiple NextJS apps.
 
 > Check-out a fully working [NextJS example](./examples/nextjs-example/) or jump to [Getting started](https://github.com/TimMikeladze/next-flag?tab=readme-ov-file#-getting-started).
@@ -23,7 +24,7 @@ pnpm add next-flag
 
 > 👋 Hello there! Follow me [@linesofcode](https://twitter.com/linesofcode) or visit [linesofcode.dev](https://linesofcode.dev) for more cool projects like this one.
 
-## 🛠️ Architecture
+## 🏗️ Architecture
 
 ![architecture](./docs/architecture.png)
 
@@ -185,6 +186,77 @@ const Component = () => {
 ```
 
 ## 💪 Advanced Usage
+
+### 🚦 Conditions
+
+Each feature flag can have a list of conditions that must be met for the feature to be enabled. Conditions are defined as a list of expressions that are evaluated at runtime. If any of the expressions return `false`, the feature will be disabled.
+
+To get started, add a `#### Conditions` subheading to the feature issue and list the conditions as a series of checkboxes. If all conditions are met, the feature will be enabled. If a condition checkbox is unchecked, it will be ignored during evaluation. In other words, if a condition checkbox is not checked, it will not affect the feature flag.
+
+````markdown
+# 🏁 Feature Flags
+
+## My feature
+
+- [x] Enabled
+
+#### Conditions
+
+- [ ] Only if admin
+
+Now define how the condition is evaluated during runtime.
+
+1. Define a `requestToContext` function that takes a request object and returns a context object. The context object is passed to the condition functions.
+2. For each path, define a condition function that takes the context object and returns a boolean.
+
+The `requestToContext` is a good place to extract information from the request object that is needed to evaluate the conditions. For example, you can extract cookies or headers from the request object to determine if a user is signed in.
+
+> ‼️ Important: The `requestToContext` function is only called when communicating with the `NextFlag` API over HTTP. If you are using the `NextFlag` directly in a server-side component, you must build the context object yourself and pass it to the `isFeatureEnabled` method directly.
+
+```ts
+// src/app/api/next-flag/index.ts
+import { NextFlag } from 'next-flag';
+import { revalidateTag, unstable_cache } from 'next/cache';
+
+export const nf = new NextFlag({
+  paths: [
+    {
+      repository: 'TimMikeladze/next-flag',
+      issue: 3,
+      conditions: {
+        'only-if-admin': (context) => context.isAdmin,
+      },
+    },
+  ],
+  async requestToContext(req) {
+    return {
+      isAdmin: false,
+    };
+  },
+  cache: {
+    revalidateTag,
+    unstable_cache,
+  },
+});
+```
+````
+
+```ts
+// src/app/page.tsx
+'use server';
+
+import { nf } from './api/next-flag';
+
+export default async function Page() {
+  const wipFeatureEnabled = await nf.isFeatureEnabled('wip-feature', {
+    context: {
+      isAdmin: true,
+    }
+  });
+
+  return wipFeatureEnabled && <div>WIP feature enabled!</div>;
+}
+```
 
 ### 🏝️ Multiple environments or branches
 
