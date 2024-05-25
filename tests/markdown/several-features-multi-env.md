@@ -1,10 +1,10 @@
-# ⛳️ Feature Flags
+# 🏁 Feature Flags
 
 ## Show logo
 
 - [x] Enabled
 
-### Production
+## Show install script
 
 - [ ] Enabled
 
@@ -14,9 +14,9 @@
 
 ### Development
 
-- [ ] Enabled
+- [x] Enabled
 
-## Show install script
+## Show footer
 
 - [x] Enabled
 

@@ -1,223 +1,143 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`parseMarkdown > another example 1`] = `
+exports[`parseMarkdown > full-example.md 1`] = `
 {
+  "show-footer": {
+    "conditions": {},
+    "enabled": true,
+    "environments": {},
+    "name": "Show footer",
+  },
   "show-install-script": {
+    "conditions": {
+      "condition-5": {
+        "enabled": false,
+        "name": "Condition 5",
+      },
+      "condition-6": {
+        "enabled": true,
+        "name": "Condition 6",
+      },
+    },
     "enabled": true,
     "environments": {
       "production": {
-        "conditions": {},
         "enabled": true,
-        "name": "production",
+        "name": "Production",
       },
     },
     "name": "Show install script",
-    "slug": "show-install-script",
   },
   "show-logo": {
+    "conditions": {
+      "condition-1": {
+        "enabled": false,
+        "name": "Condition 1",
+      },
+      "condition-2": {
+        "enabled": true,
+        "name": "Condition 2",
+      },
+    },
     "enabled": true,
     "environments": {
       "development": {
-        "conditions": {},
         "enabled": false,
-        "name": "development",
+        "name": "Development",
       },
       "preview": {
-        "conditions": {},
-        "enabled": false,
-        "name": "preview",
+        "enabled": true,
+        "name": "Preview",
       },
       "production": {
-        "conditions": {},
         "enabled": false,
-        "name": "production",
+        "name": "Production",
       },
     },
     "name": "Show logo",
-    "slug": "show-logo",
   },
 }
 `;
 
-exports[`parseMarkdown > should parse markdown with disabled feature 1`] = `
+exports[`parseMarkdown > no-features-enabled.md 1`] = `
 {
-  "feature-1": {
+  "show-footer": {
+    "conditions": {},
     "enabled": false,
-    "environments": {
-      "development": {
-        "conditions": {},
-        "enabled": false,
-        "name": "development",
-      },
-      "preview": {
-        "conditions": {},
-        "enabled": false,
-        "name": "preview",
-      },
-      "production": {
-        "conditions": {},
-        "enabled": false,
-        "name": "production",
-      },
-    },
-    "name": "Feature 1",
-    "slug": "feature-1",
+    "environments": {},
+    "name": "Show footer",
   },
-  "feature-2": {
-    "enabled": true,
-    "environments": {
-      "production": {
-        "conditions": {},
-        "enabled": false,
-        "name": "production",
-      },
-    },
-    "name": "Feature 2",
-    "slug": "feature-2",
-  },
-}
-`;
-
-exports[`parseMarkdown > should parse markdown with enabled feature 1`] = `
-{
-  "feature-1": {
-    "enabled": true,
-    "environments": {
-      "development": {
-        "conditions": {},
-        "enabled": false,
-        "name": "development",
-      },
-      "preview": {
-        "conditions": {},
-        "enabled": false,
-        "name": "preview",
-      },
-      "production": {
-        "conditions": {},
-        "enabled": false,
-        "name": "production",
-      },
-    },
-    "name": "Feature 1",
-    "slug": "feature-1",
-  },
-  "feature-2": {
-    "enabled": true,
-    "environments": {
-      "production": {
-        "conditions": {},
-        "enabled": false,
-        "name": "production",
-      },
-    },
-    "name": "Feature 2",
-    "slug": "feature-2",
-  },
-}
-`;
-
-exports[`parseMarkdown > should parse markdown with one environment enabled 1`] = `
-{
-  "feature-1": {
+  "show-install-script": {
+    "conditions": {},
     "enabled": false,
+    "environments": {},
+    "name": "Show install script",
+  },
+  "show-logo": {
+    "conditions": {},
+    "enabled": false,
+    "environments": {},
+    "name": "Show logo",
+  },
+}
+`;
+
+exports[`parseMarkdown > only-features.md 1`] = `
+{
+  "show-footer": {
+    "conditions": {},
+    "enabled": true,
+    "environments": {},
+    "name": "Show footer",
+  },
+  "show-install-script": {
+    "conditions": {},
+    "enabled": false,
+    "environments": {},
+    "name": "Show install script",
+  },
+  "show-logo": {
+    "conditions": {},
+    "enabled": true,
+    "environments": {},
+    "name": "Show logo",
+  },
+}
+`;
+
+exports[`parseMarkdown > several-features-multi-env.md 1`] = `
+{
+  "show-footer": {
+    "conditions": {},
+    "enabled": true,
     "environments": {
-      "development": {
-        "conditions": {},
-        "enabled": false,
-        "name": "development",
-      },
-      "preview": {
-        "conditions": {},
-        "enabled": false,
-        "name": "preview",
-      },
       "production": {
-        "conditions": {},
         "enabled": true,
-        "name": "production",
+        "name": "Production",
       },
     },
-    "name": "Feature 1",
-    "slug": "feature-1",
+    "name": "Show footer",
   },
-  "feature-2": {
-    "enabled": false,
-    "environments": {
-      "production": {
-        "conditions": {},
-        "enabled": false,
-        "name": "production",
-      },
-    },
-    "name": "Feature 2",
-    "slug": "feature-2",
-  },
-}
-`;
-
-exports[`parseMarkdown > should parse markdown with two environments enabled in different features 1`] = `
-{
-  "feature-1": {
+  "show-install-script": {
+    "conditions": {},
     "enabled": false,
     "environments": {
       "development": {
-        "conditions": {},
-        "enabled": false,
-        "name": "development",
-      },
-      "preview": {
-        "conditions": {},
-        "enabled": false,
-        "name": "preview",
-      },
-      "production": {
-        "conditions": {},
-        "enabled": false,
-        "name": "production",
-      },
-    },
-    "name": "Feature 1",
-    "slug": "feature-1",
-  },
-  "feature-2": {
-    "enabled": true,
-    "environments": {
-      "preview": {
-        "conditions": {},
         "enabled": true,
-        "name": "preview",
+        "name": "Development",
       },
-      "production": {
-        "conditions": {},
-        "enabled": false,
-        "name": "production",
-      },
-    },
-    "name": "Feature 2",
-    "slug": "feature-2",
-  },
-}
-`;
-
-exports[`parseMarkdown > should parse valid markdown correctly 1`] = `
-{
-  "feature-1": {
-    "enabled": false,
-    "environments": {
       "preview": {
-        "conditions": {},
         "enabled": false,
-        "name": "preview",
-      },
-      "production": {
-        "conditions": {},
-        "enabled": false,
-        "name": "production",
+        "name": "Preview",
       },
     },
-    "name": "Feature 1",
-    "slug": "feature-1",
+    "name": "Show install script",
+  },
+  "show-logo": {
+    "conditions": {},
+    "enabled": true,
+    "environments": {},
+    "name": "Show logo",
   },
 }
 `;

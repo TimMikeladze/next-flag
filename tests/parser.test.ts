@@ -7,36 +7,24 @@ const loadMarkdown = (filename: string) =>
   readFileSync(resolve(`tests/markdown/${filename}`), 'utf-8');
 
 describe('parseMarkdown', () => {
-  it('should parse valid markdown correctly', () => {
-    const markdown = loadMarkdown('basic.md');
+  it('full-example.md', () => {
+    const markdown = loadMarkdown('full-example.md');
 
     expect(parseMarkdown(markdown)).toMatchSnapshot();
   });
+  it('only-features.md', () => {
+    const markdown = loadMarkdown('only-features.md');
 
-  it('should parse markdown with enabled feature', () => {
-    const markdown = loadMarkdown('enabled.md');
     expect(parseMarkdown(markdown)).toMatchSnapshot();
   });
+  it('no-features-enabled.md', () => {
+    const markdown = loadMarkdown('no-features-enabled.md');
 
-  it('should parse markdown with disabled feature', () => {
-    const markdown = loadMarkdown('disabled.md');
     expect(parseMarkdown(markdown)).toMatchSnapshot();
   });
+  it('several-features-multi-env.md', () => {
+    const markdown = loadMarkdown('several-features-multi-env.md');
 
-  it('should parse markdown with one environment enabled', () => {
-    const markdown = loadMarkdown('one-environment-enabled.md');
-    expect(parseMarkdown(markdown)).toMatchSnapshot();
-  });
-
-  it('should parse markdown with two environments enabled in different features', () => {
-    const markdown = loadMarkdown(
-      'two-environments-enabled-in-different-features.md'
-    );
-    expect(parseMarkdown(markdown)).toMatchSnapshot();
-  });
-
-  it('another example', () => {
-    const markdown = loadMarkdown('another-example.md');
     expect(parseMarkdown(markdown)).toMatchSnapshot();
   });
 });
