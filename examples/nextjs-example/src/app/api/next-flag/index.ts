@@ -6,16 +6,8 @@ export const nf = new NextFlag({
     {
       repository: 'TimMikeladze/next-flag',
       issue: 3,
-      conditions: {
-        'only-if-admin': (context) => context.isAdmin,
-      },
     },
   ],
-  async requestToContext(req) {
-    return {
-      isAdmin: false,
-    };
-  },
   cache: {
     revalidateTag,
     unstable_cache,
