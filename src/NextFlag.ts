@@ -33,6 +33,8 @@ export class NextFlag {
 
   private requestToContext: (req: NextRequest) => Promise<Context> | Context;
 
+  private logging: boolean = false;
+
   constructor(options: NextFlagOptions) {
     this.standalone = options.standalone || false;
     this.secret =
@@ -50,6 +52,8 @@ export class NextFlag {
     this.getEnvironment = options.getEnvironment || getDefaultEnvironment;
 
     this.requestToContext = options.requestToContext || (async () => ({}));
+
+    this.logging = options.logging || false;
 
     this.octokit = new Octokit({
       auth: this.token,
@@ -118,6 +122,14 @@ export class NextFlag {
         throw new Error('Issue body not found');
       }
       const features = parseMarkdown(data.body);
+
+      if (this.logging) {
+        console.log(
+          `Fetching from GitHub features for ${project} in ${environment}`
+        );
+        console.log(JSON.stringify(features, null, 2));
+      }
+
       return { ...features };
     };
 
@@ -317,6 +329,15 @@ export class NextFlag {
       ))) as RevalidateTag;
 
     revalidateTag(foundPath.project);
+
+    if (this.logging) {
+      console.log('Revalidated cache for', foundPath.project);
+
+      const markdown = body.issue.body;
+      const features = parseMarkdown(markdown);
+
+      console.log(JSON.stringify(features, null, 2));
+    }
 
     return NextResponse.json({ success: true });
   }

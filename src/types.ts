@@ -57,6 +57,8 @@ export interface NextFlagOptions {
     token?: string;
   };
 
+  logging?: boolean;
+
   paths: NextFlagOptionsPath[];
 
   requestToContext?: (req: Request) => Promise<Context> | Context;
