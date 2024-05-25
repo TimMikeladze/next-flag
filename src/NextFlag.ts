@@ -30,7 +30,9 @@ export class NextFlag {
 
   private standalone: boolean = false;
 
-  private reqToContext: (req: NextRequest) => Promise<Record<string, unknown>>;
+  private requestToContext: (
+    req: NextRequest
+  ) => Promise<Record<string, unknown>> | Record<string, unknown>;
 
   constructor(options: NextFlagOptions) {
     this.standalone = options.standalone || false;
@@ -48,7 +50,7 @@ export class NextFlag {
 
     this.getEnvironment = options.getEnvironment || getDefaultEnvironment;
 
-    this.reqToContext = options.reqToContext || (async () => ({}));
+    this.requestToContext = options.requestToContext || (async () => ({}));
 
     this.octokit = new Octokit({
       auth: this.token,
@@ -65,6 +67,7 @@ export class NextFlag {
         project: NextFlag.pathToProject(x),
         repository: x.repository.toLowerCase(),
         issue: x.issue,
+        conditions: x.conditions || {},
       };
     });
 
@@ -145,8 +148,8 @@ export class NextFlag {
     }
 
     let context;
-    if (this.reqToContext) {
-      context = await this.reqToContext(req);
+    if (this.requestToContext) {
+      context = await this.requestToContext(req);
     }
 
     return NextResponse.json(
@@ -169,7 +172,7 @@ export class NextFlag {
     const features = await this.getFeatures({
       environment: options.environment,
       project: options.project,
-      context: options.context,
+      context: options.context || {},
     });
     return isEnabled(feature, features);
   }
@@ -209,17 +212,18 @@ export class NextFlag {
       throw new Error('path not found');
     }
 
-    const res = await this.getCachedFeatures(
+    const cachedFeatures = await this.getCachedFeatures(
       path.project,
       requestedEnvironment
     );
 
-    const features = Object.keys(res).reduce((acc, curr) => {
-      const feature = res[curr].enabled;
+    const features = Object.keys(cachedFeatures).reduce((acc, curr) => {
+      const feature = cachedFeatures[curr].enabled;
       if (!feature) {
         return acc;
       }
-      const hasEnvironments = Object.keys(res[curr].environments).length > 0;
+      const hasEnvironments =
+        Object.keys(cachedFeatures[curr].environments).length > 0;
       if (!feature && !hasEnvironments) {
         return acc;
       }
@@ -227,7 +231,8 @@ export class NextFlag {
         acc.add(curr);
         return acc;
       }
-      const foundEnvironment = res[curr].environments[requestedEnvironment];
+      const foundEnvironment =
+        cachedFeatures[curr].environments[requestedEnvironment];
       if (!foundEnvironment) {
         return acc;
       }
@@ -238,7 +243,40 @@ export class NextFlag {
       return acc;
     }, new Set());
 
-    return Array.from(features) as GetFeatures;
+    const enabledFeatures = Array.from(features) as GetFeatures;
+
+    const enabledFeaturesWithConditions = [] as GetFeatures;
+
+    await Promise.all(
+      enabledFeatures.map(async (feature) => {
+        const conditionsForPath = path.conditions || {};
+        const conditionsForFeature = cachedFeatures[feature].conditions;
+        const conditionKeys = Object.keys(conditionsForFeature);
+        if (conditionKeys.length === 0) {
+          enabledFeaturesWithConditions.push(feature);
+          return;
+        }
+
+        await Promise.all(
+          conditionKeys.map(async (conditionKey) => {
+            const condition = conditionsForFeature[conditionKey];
+            if (!condition.enabled) {
+              enabledFeaturesWithConditions.push(feature);
+              return null;
+            }
+            const conditionFn = conditionsForPath[conditionKey];
+            const result =
+              (await conditionFn?.(options.context || {})) || false;
+            if (result) {
+              enabledFeaturesWithConditions.push(feature);
+            }
+            return null;
+          })
+        );
+      })
+    );
+
+    return enabledFeaturesWithConditions;
   }
 
   public async POST(req: NextRequest) {
