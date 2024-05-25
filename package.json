@@ -1,7 +1,7 @@
 {
   "name": "next-flag",
   "description": "🏁 Feature flags powered by GitHub issues and NextJS. Toggle the features of your app by ticking a checkbox in a GitHub issue. Supports server-side rendering, multiple environments, and can be deployed as a stand-alone feature flag server.",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "Tim Mikeladze <tim.mikeladze@gmail.com>",
   "license": "MIT",
   "keywords": [
