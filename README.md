@@ -203,7 +203,6 @@ To get started, add a `#### Conditions` subheading to the feature issue and list
 #### Conditions
 
 - [ ] Only if admin
-
 ```
 
 Now define how the condition is evaluated during runtime.
@@ -213,7 +212,7 @@ Now define how the condition is evaluated during runtime.
 
 The `requestToContext` is a good place to extract information from the request object that is needed to evaluate the conditions. For example, you can extract cookies or headers from the request object to determine if a user is signed in.
 
->❗ Important: The `requestToContext` function is only called when communicating with the `NextFlag` API over HTTP. If you are using the `NextFlag` directly in a server-side component, you must build the context object yourself and pass it to the `isFeatureEnabled` method directly.
+> ❗ Important: The `requestToContext` function is only called when communicating with the `NextFlag` API over HTTP. If you are using the `NextFlag` directly in a server-side component, you must build the context object yourself and pass it to the `isFeatureEnabled` method directly.
 
 ```ts
 // src/app/api/next-flag/index.ts
@@ -450,4 +449,3 @@ If you don't want to use a Webhook simply omit the `NEXT_FLAG_WEBHOOK_SECRET` fr
 | `POST` | `(req: NextRequest) => Promise<NextResponse<{ error: string; }> or NextResponse<{ success: boolean; }>>` |
 
 <!-- TSDOC_END -->
-````

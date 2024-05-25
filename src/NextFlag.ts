@@ -256,22 +256,23 @@ export class NextFlag {
           return;
         }
 
-        await Promise.all(
+        const computedConditions = await Promise.all(
           conditionKeys.map(async (conditionKey) => {
             const condition = conditionsForFeature[conditionKey];
             if (!condition.enabled) {
               enabledFeaturesWithConditions.push(feature);
-              return null;
+              return true;
             }
             const conditionFn = conditionsForPath[conditionKey];
             const result =
               (await conditionFn?.(options.context || {})) || false;
-            if (result) {
-              enabledFeaturesWithConditions.push(feature);
-            }
-            return null;
+            return result;
           })
         );
+
+        if (computedConditions.every((x) => x === true)) {
+          enabledFeaturesWithConditions.push(feature);
+        }
       })
     );
 
