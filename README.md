@@ -193,7 +193,7 @@ Each feature flag can have a list of conditions that must be met for the feature
 
 To get started, add a `#### Conditions` subheading to the feature issue and list the conditions as a series of checkboxes. If all conditions are met, the feature will be enabled. If a condition checkbox is unchecked, it will be ignored during evaluation. In other words, if a condition checkbox is not checked, it will not affect the feature flag.
 
-````markdown
+```markdown
 # 🏁 Feature Flags
 
 ## My feature
@@ -213,8 +213,7 @@ Now define how the condition is evaluated during runtime.
 
 The `requestToContext` is a good place to extract information from the request object that is needed to evaluate the conditions. For example, you can extract cookies or headers from the request object to determine if a user is signed in.
 
-> ‼️ Important: The `requestToContext` function is only called when communicating with the `NextFlag` API over HTTP. If you are using the `NextFlag` directly in a server-side component, you must build the context object yourself and pass it to the `isFeatureEnabled` method directly.
-```
+>❗ Important: The `requestToContext` function is only called when communicating with the `NextFlag` API over HTTP. If you are using the `NextFlag` directly in a server-side component, you must build the context object yourself and pass it to the `isFeatureEnabled` method directly.
 
 ```ts
 // src/app/api/next-flag/index.ts
