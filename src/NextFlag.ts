@@ -30,6 +30,8 @@ export class NextFlag {
 
   private standalone: boolean = false;
 
+  private reqToContext: (req: NextRequest) => Promise<Record<string, unknown>>;
+
   constructor(options: NextFlagOptions) {
     this.standalone = options.standalone || false;
     this.secret =
@@ -45,6 +47,8 @@ export class NextFlag {
     }
 
     this.getEnvironment = options.getEnvironment || getDefaultEnvironment;
+
+    this.reqToContext = options.reqToContext || (async () => ({}));
 
     this.octokit = new Octokit({
       auth: this.token,
@@ -140,10 +144,16 @@ export class NextFlag {
       environment = getDefaultEnvironment();
     }
 
+    let context;
+    if (this.reqToContext) {
+      context = await this.reqToContext(req);
+    }
+
     return NextResponse.json(
       await this.getFeatures({
         environment,
         project,
+        context,
       })
     );
   }
@@ -151,6 +161,7 @@ export class NextFlag {
   public async isFeatureEnabled(
     feature: string | string[],
     options: {
+      context?: Record<string, unknown>;
       environment?: string;
       project?: string;
     } = {}
@@ -158,12 +169,14 @@ export class NextFlag {
     const features = await this.getFeatures({
       environment: options.environment,
       project: options.project,
+      context: options.context,
     });
     return isEnabled(feature, features);
   }
 
   public async getFeatures(
     options: {
+      context?: Record<string, unknown>;
       environment?: string;
       project?: string;
     } = {}

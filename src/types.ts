@@ -55,6 +55,8 @@ export interface NextFlagOptions {
 
   paths: NextFlagOptionsPath[];
 
+  reqToContext?: (req: Request) => Promise<Record<string, unknown>>;
+
   standalone?: boolean;
 }
 
