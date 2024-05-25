@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Octokit } from '@octokit/rest';
 import {
+  Context,
   GetFeatures,
   NextFlagOptions,
   NextFlagOptionsPath,
@@ -30,9 +31,7 @@ export class NextFlag {
 
   private standalone: boolean = false;
 
-  private requestToContext: (
-    req: NextRequest
-  ) => Promise<Record<string, unknown>> | Record<string, unknown>;
+  private requestToContext: (req: NextRequest) => Promise<Context> | Context;
 
   constructor(options: NextFlagOptions) {
     this.standalone = options.standalone || false;
@@ -164,7 +163,7 @@ export class NextFlag {
   public async isFeatureEnabled(
     feature: string | string[],
     options: {
-      context?: Record<string, unknown>;
+      context?: Context;
       environment?: string;
       project?: string;
     } = {}
@@ -179,7 +178,7 @@ export class NextFlag {
 
   public async getFeatures(
     options: {
-      context?: Record<string, unknown>;
+      context?: Context;
       environment?: string;
       project?: string;
     } = {}

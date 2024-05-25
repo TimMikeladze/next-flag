@@ -23,7 +23,7 @@ export interface Features {
   [slug: string]: Feature;
 }
 
-export type Context = Record<string, unknown>;
+export type Context = Record<string, any>;
 
 export interface NextFlagOptionsPath {
   conditions?: Record<string, (context: Context) => Promise<boolean> | boolean>;
@@ -59,7 +59,7 @@ export interface NextFlagOptions {
 
   paths: NextFlagOptionsPath[];
 
-  requestToContext?: (req: Request) => Promise<Record<string, unknown>>;
+  requestToContext?: (req: Request) => Promise<Context> | Context;
 
   standalone?: boolean;
 }
