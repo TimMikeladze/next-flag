@@ -432,15 +432,15 @@ If you don't want to use a Webhook simply omit the `NEXT_FLAG_WEBHOOK_SECRET` fr
 
 #### :gear: isFeatureEnabled
 
-| Method             | Type                                                                               |
-| ------------------ | ---------------------------------------------------------------------------------- |
-| `isFeatureEnabled` | `(feature: string or string[], project?: string or undefined) => Promise<boolean>` |
+| Method             | Type                                                                                                                                                                 |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `isFeatureEnabled` | `(feature: string or string[], options?: { context?: Context or undefined; environment?: string or undefined; project?: string or undefined; }) => Promise<boolean>` |
 
 #### :gear: getFeatures
 
-| Method        | Type                                                      |
-| ------------- | --------------------------------------------------------- |
-| `getFeatures` | `(project?: string or undefined) => Promise<GetFeatures>` |
+| Method        | Type                                                                                                                                        |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `getFeatures` | `(options?: { context?: Context or undefined; environment?: string or undefined; project?: string or undefined; }) => Promise<GetFeatures>` |
 
 #### :gear: POST
 
