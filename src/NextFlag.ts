@@ -35,6 +35,8 @@ export class NextFlag {
 
   private logging: boolean = false;
 
+  private returnErrorCodeOnSecretMismatch: boolean = false;
+
   constructor(options: NextFlagOptions) {
     this.standalone = options.standalone || false;
     this.secret =
@@ -48,6 +50,9 @@ export class NextFlag {
         'NEXT_FLAG_WEBHOOK_SECRET not provided. It is suggested to configure a GitHub Webhook in order to activate NextJS caching. Without caching, the GitHub API will be queried for every feature flag check.'
       );
     }
+
+    this.returnErrorCodeOnSecretMismatch =
+      options.returnErrorCodeOnSecretMismatch || false;
 
     this.getEnvironment = options.getEnvironment || getDefaultEnvironment;
 
@@ -322,9 +327,24 @@ export class NextFlag {
       );
     }
 
-    const body = await verifyWebhookSignature(req, this.secret);
-    if (!body) {
-      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+    let body;
+    const status = this.returnErrorCodeOnSecretMismatch ? 401 : 200;
+    try {
+      body = await verifyWebhookSignature(req, this.secret);
+      if (!body) {
+        return NextResponse.json(
+          { error: 'Invalid webhook signature' },
+          { status }
+        );
+      }
+    } catch (e) {
+      if (this.logging) {
+        console.error(e);
+      }
+      return NextResponse.json(
+        { error: 'Invalid webhook request' },
+        { status }
+      );
     }
 
     const foundPath = this.paths.find(

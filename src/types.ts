@@ -63,6 +63,8 @@ export interface NextFlagOptions {
 
   requestToContext?: (req: Request) => Promise<Context> | Context;
 
+  returnErrorCodeOnSecretMismatch?: boolean;
+
   standalone?: boolean;
 }
 
