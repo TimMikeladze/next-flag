@@ -175,8 +175,10 @@ export class NextFlag {
   public async isFeatureEnabled(
     feature: string | string[],
     options: {
+      and?: () => Promise<boolean> | boolean;
       context?: Context;
       environment?: string;
+      or?: () => Promise<boolean> | boolean;
       project?: string;
     } = {}
   ): Promise<boolean> {
@@ -185,7 +187,24 @@ export class NextFlag {
       project: options.project,
       context: options.context || {},
     });
-    return isEnabled(feature, features);
+
+    const enabled = await isEnabled(feature, features);
+
+    if (options.and && options.or) {
+      throw new Error('Cannot use both and and or');
+    }
+
+    if (options.and && enabled) {
+      const and = await options.and?.();
+      return enabled && and;
+    }
+
+    if (options.or && !enabled) {
+      const or = await options.or?.();
+      return enabled || or;
+    }
+
+    return enabled;
   }
 
   public async getFeatures(

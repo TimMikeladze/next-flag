@@ -258,6 +258,22 @@ export default async function Page() {
 }
 ```
 
+When using `next-flag` in a server-side component, you can also pass an `and` or `or` async function to the `isFeatureEnabled` method options to define extra in-line conditions that must be met for the feature to be enabled.
+
+```ts
+// src/app/page.tsx
+'use server';
+
+export default async function Page() {
+  const wipFeatureEnabled = await nf.isFeatureEnabled('wip-feature', {
+    and: () => true,
+  });
+
+  return wipFeatureEnabled && <div>WIP feature enabled!</div>;
+}
+
+```
+
 ### 🏝️ Multiple environments or branches
 
 By default `next-flag` will try to read `process.env.NEXT_PUBLIC_VERCEL_ENV || process.env.NEXT_PUBLIC_ENV || process.env.NEXT_PUBLIC_STAGE || process.env.VERCEL_ENV || process.env.ENV || process.env.STAGE || process.env.NODE_ENV` to determine the current environment.
@@ -432,9 +448,9 @@ If you don't want to use a Webhook simply omit the `NEXT_FLAG_WEBHOOK_SECRET` fr
 
 #### :gear: isFeatureEnabled
 
-| Method             | Type                                                                                                                                                                 |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `isFeatureEnabled` | `(feature: string or string[], options?: { context?: Context or undefined; environment?: string or undefined; project?: string or undefined; }) => Promise<boolean>` |
+| Method             | Type                                                                                                                                                                                                                                                                        |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `isFeatureEnabled` | `(feature: string or string[], options?: { and?: (() => boolean or Promise<boolean>) or undefined; context?: Context or undefined; environment?: string or undefined; or?: (() => boolean or Promise<...>) or undefined; project?: string or undefined; }) => Promise<...>` |
 
 #### :gear: getFeatures
 
