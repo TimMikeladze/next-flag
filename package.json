@@ -142,7 +142,7 @@
   },
   "resolutions": {},
   "dependencies": {
-    "@octokit/rest": "^20.1.1",
+    "@octokit/rest": "^21.0.0",
     "@textlint/markdown-to-ast": "^14.0.4",
     "space-slug": "^2.0.2"
   }
